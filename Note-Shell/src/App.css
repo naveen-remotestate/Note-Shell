@@ -1,8 +1,12 @@
 @import url("https://fonts.googleapis.com/css2?family=Kaushan+Script&family=Spline+Sans&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Source+Sans+3:ital,wght@0,200..900;1,200..900&display=swap");
 @import "tailwindcss";
 
 @theme {
   --color-primary: #181818;
   --color-secondary: #1c1c1c;
   --font-KaushanScript: "Kaushan Script";
+  --font-SourceSans3: "Source Sans 3";
+
+  --color-menutextcolor: rgba(255, 255, 255, 0.6);
 }

@@ -1,6 +1,7 @@
 import Sidebar from "./components/Sidebar";
 import Notes from "./components/Notes";
 import NoteContent from "./components/NoteContent";
+import More from "./SidebarMenu/More";
 function App() {
   return (
     <>
