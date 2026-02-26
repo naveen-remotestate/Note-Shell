@@ -9,4 +9,6 @@
   --font-SourceSans3: "Source Sans 3";
 
   --color-menutextcolor: rgba(255, 255, 255, 0.6);
+  --color-headingcolor: #ffffff;
+  --color-notesbg: rgba(255, 255, 255, 0.03);
 }
