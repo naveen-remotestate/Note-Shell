@@ -6,12 +6,9 @@ import Recents from "../SidebarMenu/Recents";
 
 function Sidebar() {
   return (
-    <>
-      <div className="bg-primary w-20/100 h-full flex flex-col text-center gap-6 text-menutextcolor font-SourceSans3-600 font-semibold ">
-        <div
-          id="title-searchIcon"
-          className=" p-7 flex flex-row  justify-between"
-        >
+    <div className="h-screen flex flex-col justify-between overflow-scroll">
+      <div>
+        <div className=" p-7 flex flex-row  justify-between">
           <div id="title">
             <h1 className="text-headingcolor font-KaushanScript text-2xl font-normal ">
               Note-Shell
@@ -33,11 +30,12 @@ function Sidebar() {
             New Note
           </button>
         </div>
+
         <Recents />
         <Folders />
-        <More />
       </div>
-    </>
+      <More />
+    </div>
   );
 }
 export default Sidebar;

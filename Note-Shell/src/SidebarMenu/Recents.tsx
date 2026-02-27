@@ -1,11 +1,15 @@
 import { useEffect, useState } from "react";
 import RecentIcon from "../assets/RecentIcon";
 import axios from "axios";
+import { Link } from "react-router";
 function Recents() {
   type recentType = {
     id: string;
     folderId: string;
     title: string;
+    folder: {
+      name: string;
+    };
   };
 
   const [recents, setRecents] = useState<recentType[]>([]);
@@ -33,13 +37,23 @@ function Recents() {
         </div>
         <div className="flex flex-col ">
           {recents.map((item) => (
-            <div
+            <Link
+              to={
+                "/folders/" +
+                item.folderId +
+                "/" +
+                item.folder.name + //put folder name here
+                "/" +
+                "content/" +
+                item.id
+              }
               key={item.id}
-              className="flex flex-row gap-3 p-3 hover:bg-blue-500"
             >
-              <RecentIcon />
-              <h3>{item.title}</h3>
-            </div>
+              <div className="flex flex-row gap-3 p-3 hover:bg-blue-500 truncate">
+                <RecentIcon />
+                <h3>{item.title}</h3>
+              </div>
+            </Link>
           ))}
         </div>
       </div>

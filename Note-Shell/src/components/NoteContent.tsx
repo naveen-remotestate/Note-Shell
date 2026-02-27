@@ -1,12 +1,22 @@
+import { useParams } from "react-router";
 import NoOpenNote from "./NoOpenNote";
 import OpenedNote from "./OpenedNote";
 
 function NoteContent() {
-  const id = "ihfuf4fh98shufw8ewe4wfe4";
+  const paramData = useParams();
+  // console.log(paramData);
+  const noteId = paramData.noteid;
+  const foldername = paramData.name ? paramData.name : null;
   return (
     <>
-      <div className="bg-primary w-55/100 h-full flex">
-        {id ? <OpenedNote /> : <NoOpenNote />}
+      <div className="overflow-scroll w-full">
+        {noteId ? (
+          <div>
+            <OpenedNote id={noteId} foldername={foldername} />
+          </div>
+        ) : (
+          <NoOpenNote />
+        )}
       </div>
     </>
   );

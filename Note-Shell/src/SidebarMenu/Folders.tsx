@@ -6,8 +6,6 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router";
 
 function Folders() {
-  const test_folder_data = ["Personal", "Work", "Travel", "Events", "Finances"];
-
   type folderType = {
     id: string;
     name: string;
@@ -29,19 +27,17 @@ function Folders() {
     getFolders();
   }, []);
 
-  function OpenFolder() {}
-
   return (
     <>
-      <div className="flex flex-col text-left ">
+      <div className="flex flex-col text-left overflow-scroll ">
         <div className="flex flex-row justify-between pl-3 pr-3 ">
           <h5 className="text-xs font-semibold">Folders</h5> <AddFolderIcon />
         </div>
-        <div className="flex flex-col ">
+        <div className="flex flex-col overflow-y-auto max-h-96 ">
           {folders.map((item) => (
             <Link
               key={item.id}
-              to={`/components/${item.id}`}
+              to={"/folders/" + item.id + "/" + item.name}
               className="w-full flex flex-row gap-3 p-3 hover:bg-blue-500"
             >
               <CloseFolderIcon />
