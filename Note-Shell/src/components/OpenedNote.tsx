@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import DateIcon from "../assets/DateIcon";
 import FolderIcon from "../assets/FolderIcon";
 import ThreeDotIcon from "../assets/ThreeDotIcon";
-import axios from "axios";
+import { getNoteById } from "../api/get";
 type propType = {
   id: string;
   foldername: string | null;
@@ -19,20 +19,14 @@ function OpenedNote({ id, foldername }: propType) {
     updatedAt: string;
   };
   const [note, setNote] = useState<noteType | null>(null);
-  async function getNotes() {
-    try {
-      const response = await axios.get(
-        `https://nowted-server.remotestate.com/notes/${id}`,
-      );
-      // console.log(response.data.note);
-      setNote(response.data?.note);
-    } catch (error) {
-      console.log(error);
-    }
-  }
+
   useEffect(() => {
     if (id) {
-      getNotes();
+      async function getdata() {
+        const data = await getNoteById(id);
+        setNote(data);
+      }
+      getdata();
     }
   }, [id]);
   // const getdate:string|null =note?.updatedAt?

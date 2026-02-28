@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import RecentIcon from "../assets/RecentIcon";
-import axios from "axios";
 import { Link } from "react-router";
+import { getRecent } from "../api/get";
 function Recents() {
   type recentType = {
     id: string;
@@ -15,19 +15,12 @@ function Recents() {
   const [recents, setRecents] = useState<recentType[]>([]);
 
   useEffect(() => {
-    getRecent();
-  }, []);
-
-  async function getRecent() {
-    try {
-      const response = await axios.get(
-        "https://nowted-server.remotestate.com/notes/recent",
-      );
-      setRecents(response.data?.recentNotes);
-    } catch (error) {
-      console.error(error);
+    async function getdata() {
+      const data = await getRecent();
+      setRecents(data);
     }
-  }
+    getdata();
+  }, []);
 
   return (
     <>
