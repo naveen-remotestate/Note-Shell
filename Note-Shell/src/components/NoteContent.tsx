@@ -7,6 +7,7 @@ function NoteContent() {
   // console.log(paramData);
   const noteId = paramData.noteid;
   const foldername = paramData.name ? paramData.name : null;
+  console.log(foldername);
   return (
     <>
       <div className="overflow-scroll w-full">

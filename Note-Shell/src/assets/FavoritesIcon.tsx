@@ -1,4 +1,4 @@
-function Favorites() {
+function FavoritesIcon() {
   return (
     <>
       <svg
@@ -21,4 +21,4 @@ function Favorites() {
     </>
   );
 }
-export default Favorites;
+export default FavoritesIcon;

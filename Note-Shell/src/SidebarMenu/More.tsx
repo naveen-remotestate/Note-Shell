@@ -1,6 +1,6 @@
 import Archived from "../assets/ArchivedIcon";
-import Favorites from "../assets/FavoritesIcon";
-import Trash from "../assets/TrashIcon";
+import FavoritesIcon from "../assets/FavoritesIcon";
+import TrashIcon from "../assets/TrashIcon";
 import { Link } from "react-router";
 function More() {
   return (
@@ -10,24 +10,24 @@ function More() {
           <h5 className="text-xs font-semibold">More</h5>
         </div>
         <div className="flex flex-col ">
-          <Link to={""}>
+          <Link to={"favorites"}>
             <div className="flex flex-row gap-3 p-3 hover:bg-blue-500">
-              <Favorites />
+              <FavoritesIcon />
               <h3>Favorites</h3>
             </div>
           </Link>
-          <div id="trash">
+          <Link to={"Trash"}>
             <div className="flex flex-row gap-3 p-3 hover:bg-blue-500">
-              <Trash />
+              <TrashIcon />
               <h3>Trash</h3>
             </div>
-          </div>
-          <div id="archived">
+          </Link>
+          <Link to={"Archives"}>
             <div className="flex flex-row gap-3 p-3 hover:bg-blue-500">
               <Archived />
               <h3>Archived Notes</h3>
             </div>
-          </div>
+          </Link>
         </div>
       </div>
     </>

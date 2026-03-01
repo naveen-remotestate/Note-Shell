@@ -5,6 +5,8 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router";
 import { getFolders } from "../api/get";
 import { patchFolderName } from "../api/patch";
+import TrashIcon from "../assets/TrashIcon";
+import { deleteFolder } from "../api/delete";
 
 function Folders() {
   type folderType = {
@@ -21,7 +23,7 @@ function Folders() {
       return;
     }
     try {
-      patchFolderName(id, newFoldername);
+      await patchFolderName(id, newFoldername);
       setFolders((prev) =>
         prev.map((folder) =>
           folder.id === id ? { ...folder, name: newFoldername } : folder,
@@ -80,7 +82,31 @@ function Folders() {
                   className="bg-transparent border-b border-white outline-none w-full"
                 />
               ) : (
-                <h3>{item.name}</h3>
+                <div className="flex flex-row justify-between w-full">
+                  <div>
+                    <h3>{item.name}</h3>
+                  </div>
+                  <div
+                    onClick={async (e) => {
+                      e.preventDefault();
+                      const confirmDelete = window.confirm(
+                        "Are you sure you want to delete this folder? This will delete all notes inside.",
+                      );
+                      if (confirmDelete) {
+                        try {
+                          await deleteFolder(item.id);
+                          setFolders((prev) =>
+                            prev.filter((f) => f.id !== item.id),
+                          );
+                        } catch (error) {
+                          console.log(error);
+                        }
+                      }
+                    }}
+                  >
+                    <TrashIcon className="cursor-pointer text-white hover:text-red-500" />
+                  </div>
+                </div>
               )}
             </Link>
           ))}

@@ -14,7 +14,7 @@ export async function getFolders() {
 export async function getFolderNotesById(folderId: string | null) {
   try {
     const response = await axios.get(
-      `https://nowted-server.remotestate.com/notes?archived=false&favorite=false&deleted=false&folderId=${folderId}&page=1&limit=10`,
+      `https://nowted-server.remotestate.com/notes?archived=false&deleted=false&folderId=${folderId}&page=1&limit=10`,
     );
     // console.log(response.data?.notes);
     return response.data?.notes;
@@ -47,3 +47,49 @@ export async function getNoteById(id: string | null) {
 }
 
 //getting all the favorite notes
+export async function getFavorites() {
+  try {
+    const response = await axios.get(
+      "https://nowted-server.remotestate.com/notes?archived=false&favorite=true&deleted=false",
+    );
+    return response.data?.notes;
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+//getting Archive Notes
+export async function getArchives() {
+  try {
+    const response = await axios.get(
+      "https://nowted-server.remotestate.com/notes?archived=true&deleted=false",
+    );
+    return response.data?.notes;
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+//geting deleted notes
+export async function getTrash() {
+  try {
+    const response = await axios.get(
+      "https://nowted-server.remotestate.com/notes?deleted=true",
+    );
+    return response.data?.notes;
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+//Search on Notes
+export async function getSearch(searchInput: string) {
+  try {
+    const response = await axios.get(
+      `https://nowted-server.remotestate.com/notes?archived=false&deleted=false&search=${searchInput}`,
+    );
+    return response.data?.notes;
+  } catch (error) {
+    console.log(error);
+  }
+}
