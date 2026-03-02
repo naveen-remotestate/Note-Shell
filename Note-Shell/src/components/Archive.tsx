@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Link } from "react-router";
+import { Link, useParams } from "react-router";
 import { getArchives } from "../api/get";
 function Archives() {
   type allArchivesNotesType = {
@@ -12,6 +12,7 @@ function Archives() {
       name: string;
     };
   };
+  const paramdata = useParams();
 
   const [allArchivesNotes, setAllArchivesNotes] = useState<
     allArchivesNotesType[]
@@ -23,7 +24,7 @@ function Archives() {
       setAllArchivesNotes(data);
     }
     getdata();
-  }, []);
+  }, [paramdata.id]);
   function getdate(date: string): string {
     const dateObj = new Date(date);
     return dateObj.toLocaleDateString();
@@ -43,7 +44,7 @@ function Archives() {
             {allArchivesNotes.map((item) => (
               <Link
                 to={
-                  "/Archives/" +
+                  "/archives/" +
                   item.folderId +
                   "/" +
                   item.folder.name +
@@ -56,7 +57,7 @@ function Archives() {
                 <h2 className=" w-full font-SourceSans3 font-semibold text-2xl text-headingcolor pl-3 pr-3 truncate">
                   {item.title}
                 </h2>
-                <div className="flex flex-row font-SourceSans3 text-menutextcolor p-3 gap-4">
+                <div className="flex flex-row overflow-hidden font-SourceSans3 text-menutextcolor p-3 gap-4">
                   <h3>{getdate(item.updatedAt)}</h3>
                   <h3>{item.preview}</h3>
                 </div>

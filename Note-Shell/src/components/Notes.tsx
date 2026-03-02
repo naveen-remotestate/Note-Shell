@@ -58,7 +58,7 @@ function Notes() {
                 <h2 className=" w-full font-SourceSans3 font-semibold text-2xl text-headingcolor pl-3 pr-3 truncate">
                   {item.title}
                 </h2>
-                <div className="flex flex-row font-SourceSans3 text-menutextcolor p-3 gap-4">
+                <div className="flex flex-row overflow-hidden font-SourceSans3 text-menutextcolor p-3 gap-4">
                   <h3>{getdate(item.updatedAt)}</h3>
                   <h3>{item.preview}</h3>
                 </div>

@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router";
 import { getFavorites, getFolderNotesById } from "../api/get";
+
 function Favorites() {
   type allFavoritesNotesType = {
     id: string;
@@ -12,6 +13,7 @@ function Favorites() {
       name: string;
     };
   };
+  const paramdata = useParams();
 
   const [allFavoritesNotes, setAllFavoritesNotes] = useState<
     allFavoritesNotesType[]
@@ -23,7 +25,7 @@ function Favorites() {
       setAllFavoritesNotes(data);
     }
     getdata();
-  }, []);
+  }, [paramdata.id]);
   function getdate(date: string): string {
     const dateObj = new Date(date);
     return dateObj.toLocaleDateString();
@@ -56,7 +58,7 @@ function Favorites() {
                 <h2 className=" w-full font-SourceSans3 font-semibold text-2xl text-headingcolor pl-3 pr-3 truncate">
                   {item.title}
                 </h2>
-                <div className="flex flex-row font-SourceSans3 text-menutextcolor p-3 gap-4">
+                <div className="flex flex-row overflow-hidden font-SourceSans3 text-menutextcolor p-3 gap-4">
                   <h3>{getdate(item.updatedAt)}</h3>
                   <h3>{item.preview}</h3>
                 </div>

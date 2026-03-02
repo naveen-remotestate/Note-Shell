@@ -7,6 +7,7 @@ import { getFolders } from "../api/get";
 import { patchFolderName } from "../api/patch";
 import TrashIcon from "../assets/TrashIcon";
 import { deleteFolder } from "../api/delete";
+import { postFolder } from "../api/post";
 
 function Folders() {
   type folderType = {
@@ -43,12 +44,24 @@ function Folders() {
     getdata();
   }, []);
 
+  const AddFolder = async () => {
+    const name = prompt("Enter folder name");
+    if (!name || !name.trim()) return;
+
+    try {
+      const newFolder = await postFolder(name);
+      setFolders((prev) => [...prev, newFolder]);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   return (
     <>
       <div className="flex flex-col text-left overflow-scroll ">
         <div className="flex flex-row justify-between pl-3 pr-3 ">
           <h5 className="text-xs font-semibold">Folders</h5>
-          <div>
+          <div onClick={AddFolder} className="cursor-pointer">
             <AddFolderIcon />
           </div>
         </div>

@@ -1,15 +1,26 @@
-import { useParams } from "react-router";
+import { useNavigate, useParams } from "react-router";
 import RestoreIcon from "../assets/RestoreIcon";
 import { useEffect, useState } from "react";
+import { postRestoreNoteById } from "../api/post";
 
 export default function Restoretrash() {
   const paramdata = useParams();
   //   console.log(paramdata);
+  const noteid = paramdata.noteid ? paramdata.noteid : "";
   const [isRestored, setIsRestored] = useState(false);
+
+  const navigate = useNavigate();
+
+  async function restoreNote(id: string) {
+    console.log("restore note function");
+    await postRestoreNoteById(id);
+    setIsRestored(true);
+    navigate("/trash");
+  }
 
   useEffect(() => {
     setIsRestored(false);
-  }, [paramdata.noteid]);
+  }, [noteid]);
   return (
     <>
       <div className=" flex flex-col items-center justify-center text-center h-full w-full">
@@ -30,13 +41,11 @@ export default function Restoretrash() {
         </div>
         <div>
           <button
-            onClick={() => setIsRestored(true)}
-            disabled={isRestored}
+            onClick={() => restoreNote(noteid)}
             className={`text-white rounded font-medium transition-transform duration-100 active:scale-95 text-sm px-4 py-2.5 ${
-              isRestored
-                ? "bg-green-500 hover:bg-green-600"
-                : "bg-blue-500 hover:bg-emerald-500"
+              isRestored ? "bg-green-500 " : "bg-blue-500 hover:bg-emerald-500"
             }`}
+            disabled={isRestored}
           >
             {isRestored ? "Restored" : "Restore"}
           </button>

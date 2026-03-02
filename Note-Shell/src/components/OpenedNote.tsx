@@ -3,6 +3,11 @@ import DateIcon from "../assets/DateIcon";
 import FolderIcon from "../assets/FolderIcon";
 import ThreeDotIcon from "../assets/ThreeDotIcon";
 import { getNoteById } from "../api/get";
+import FavoritesIcon from "../assets/FavoritesIcon";
+import ArchivedIcon from "../assets/ArchivedIcon";
+import TrashIcon from "../assets/TrashIcon";
+import { patchMarkArchive, patchMarkFavorite } from "../api/patch";
+import { useNavigate } from "react-router";
 type propType = {
   id: string;
   foldername: string | null;
@@ -19,6 +24,36 @@ function OpenedNote({ id, foldername }: propType) {
     updatedAt: string;
   };
   const [note, setNote] = useState<noteType | null>(null);
+  const [isThreeDotOpen, setIsThreeDotOpen] = useState(false);
+
+  const navigate = useNavigate();
+
+  async function markFavorite(id: string, value: boolean) {
+    try {
+      await patchMarkFavorite(id, value);
+
+      setNote((prev) => (prev ? { ...prev, isFavorite: value } : prev));
+      setIsThreeDotOpen(false);
+      if (!value) {
+        navigate("/favorites");
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  }
+  async function markArchive(id: string, value: boolean) {
+    try {
+      await patchMarkArchive(id, value);
+
+      setNote((prev) => (prev ? { ...prev, isArchived: value } : prev));
+      setIsThreeDotOpen(false);
+      if (!value) {
+        navigate("/archives");
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  }
 
   useEffect(() => {
     if (id) {
@@ -35,12 +70,77 @@ function OpenedNote({ id, foldername }: propType) {
   return (
     <>
       <div id="frame18" className="flex flex-col h-full w-full p-12">
-        <div id="frame24" className="flex flex-row justify-between p-2">
-          <h1 className="text-headingcolor text-2xl font-SourceSans3 font-semibold">
-            {note?.title}
-          </h1>
-          <div>
-            <ThreeDotIcon />
+        <div className="flex flex-row justify-between p-2">
+          <div className="flex flex-row">
+            <h1 className="text-headingcolor text-2xl font-SourceSans3 font-semibold">
+              {note?.title}
+            </h1>
+            {note?.isFavorite ? (
+              <FavoritesIcon active={note?.isFavorite} />
+            ) : (
+              <></>
+            )}
+          </div>
+
+          <div className="relative">
+            <button onClick={() => setIsThreeDotOpen((prev) => !prev)}>
+              <ThreeDotIcon />
+            </button>
+
+            <div
+              className={`absolute right-0 mt-2 z-10 ${
+                isThreeDotOpen ? "block" : "hidden"
+              } rounded-2xl w-55`}
+            >
+              <ul className="rounded-sm bg-highlightednotecolor text-sm font-semibold text-headingcolor">
+                <li
+                  onClick={() =>
+                    note?.isFavorite
+                      ? markFavorite(id, false)
+                      : markFavorite(id, true)
+                  }
+                >
+                  <div className="p-4 flex flex-row gap-3 hover:bg-blue-500 cursor-pointer">
+                    {note?.isFavorite ? (
+                      <>
+                        <FavoritesIcon active={note?.isFavorite} />
+                        <h1>Remove from Favorites</h1>
+                      </>
+                    ) : (
+                      <>
+                        <FavoritesIcon active={note?.isFavorite} />
+                        <h1>Add to Favorites</h1>
+                      </>
+                    )}
+                  </div>
+                </li>
+                <li
+                  onClick={() =>
+                    note?.isArchived
+                      ? markArchive(id, false)
+                      : markArchive(id, true)
+                  }
+                >
+                  <div className="p-4 flex flex-row gap-3 hover:bg-blue-500 cursor-pointer">
+                    {note?.isArchived ? (
+                      <>
+                        <ArchivedIcon />
+                        <h1>Unarchive</h1>
+                      </>
+                    ) : (
+                      <>
+                        <ArchivedIcon />
+                        <h1>Archive</h1>
+                      </>
+                    )}
+                  </div>
+                </li>
+                <div className="border-b border-menutextcolor ml-4 w-8/10"></div>
+                <li className="p-4 flex flex-row gap-3 hover:bg-blue-500  cursor-pointer">
+                  <TrashIcon /> Delete
+                </li>
+              </ul>
+            </div>
           </div>
         </div>
         <div

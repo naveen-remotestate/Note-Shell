@@ -17,7 +17,7 @@ function App() {
 
           <Routes>
             <Route
-              path="folders/:id/:name"
+              path="folders/:id/:name?"
               element={
                 <>
                   <div className="bg-secondary w-25/100 h-full">
@@ -59,7 +59,7 @@ function App() {
 
             {/* {" this is for Archives "} */}
             <Route
-              path="Archives"
+              path="archives"
               element={
                 <>
                   <div className="bg-secondary w-25/100 h-full">
@@ -72,7 +72,7 @@ function App() {
               }
             />
             <Route
-              path="Archives/:id/:name/:noteid"
+              path="archives/:id/:title/:noteid"
               element={
                 <>
                   <div className="bg-secondary w-25/100 h-full">
@@ -98,12 +98,13 @@ function App() {
                 </>
               }
             />
+
             <Route
               path="trash/:id/:name?/:noteid"
               element={
                 <>
                   <div className="bg-secondary w-25/100 h-full">
-                    <Trash />
+                    <Trash key="diff-trash" />
                   </div>
                   <div className="bg-primary w-55/100 h-full flex">
                     <Restoretrash />

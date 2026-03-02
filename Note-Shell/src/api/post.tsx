@@ -9,3 +9,9 @@ export async function postFolder(folderName: string) {
   );
   return response.data;
 }
+
+export async function postRestoreNoteById(noteid: string) {
+  await axios.post(
+    `https://nowted-server.remotestate.com/notes/${noteid}/restore`,
+  );
+}

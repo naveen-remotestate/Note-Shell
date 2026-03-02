@@ -1,4 +1,4 @@
-import Archived from "../assets/ArchivedIcon";
+import ArchivedIcon from "../assets/ArchivedIcon";
 import FavoritesIcon from "../assets/FavoritesIcon";
 import TrashIcon from "../assets/TrashIcon";
 import { Link } from "react-router";
@@ -22,9 +22,9 @@ function More() {
               <h3>Trash</h3>
             </div>
           </Link>
-          <Link to={"Archives"}>
+          <Link to={"archives"}>
             <div className="flex flex-row gap-3 p-3 hover:bg-blue-500">
-              <Archived />
+              <ArchivedIcon />
               <h3>Archived Notes</h3>
             </div>
           </Link>

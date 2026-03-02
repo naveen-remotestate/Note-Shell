@@ -1,4 +1,4 @@
-function Archived() {
+function ArchivedIcon() {
   return (
     <>
       <svg
@@ -36,4 +36,4 @@ function Archived() {
     </>
   );
 }
-export default Archived;
+export default ArchivedIcon;
