@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Link } from "react-router";
+import { Link, NavLink } from "react-router";
 import { getTrash } from "../api/get";
 function Trash() {
   type allTrashNotesType = {
@@ -39,12 +39,17 @@ function Trash() {
         {allTrashNotes.length != 0 ? (
           <div className="flex flex-col gap-3 pl-4 pr-4">
             {allTrashNotes.map((item) => (
-              <Link
+              <NavLink
                 to={
                   "/trash/" + item.folderId + "/" + item.title + "/" + item.id
                 }
                 key={item.id}
-                className="flex flex-col w-full h-fit bg-notesbg justify-center p-3 hover:bg-blue-500"
+                // className="flex flex-col w-full h-fit bg-notesbg justify-center p-3 hover:bg-blue-500"
+                className={({ isActive }) =>
+                  `w-full flex flex-col p-3 h-fit transition-colors duration-200 justify-center ${
+                    isActive ? "bg-blue-500 text-white" : "hover:bg-blue-500/40"
+                  }`
+                }
               >
                 <h2 className=" w-full font-SourceSans3 font-semibold text-2xl text-headingcolor pl-3 pr-3 truncate">
                   {item.title}
@@ -53,7 +58,7 @@ function Trash() {
                   <h3>{getdate(item.updatedAt)}</h3>
                   <h3>{item.preview}</h3>
                 </div>
-              </Link>
+              </NavLink>
             ))}
           </div>
         ) : (

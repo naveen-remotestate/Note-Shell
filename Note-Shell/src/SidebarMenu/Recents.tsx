@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import RecentIcon from "../assets/RecentIcon";
-import { Link } from "react-router";
+import { NavLink } from "react-router";
 import { getRecent } from "../api/get";
 function Recents() {
   type recentType = {
@@ -30,7 +30,7 @@ function Recents() {
         </div>
         <div className="flex flex-col ">
           {recents.map((item) => (
-            <Link
+            <NavLink
               to={
                 "/folders/" +
                 item.folderId +
@@ -40,13 +40,18 @@ function Recents() {
                 "content/" +
                 item.id
               }
+              className={({ isActive }) =>
+                `transition-colors duration-200 ${
+                  isActive ? "bg-blue-500 text-white" : "hover:bg-blue-500/40"
+                }`
+              }
               key={item.id}
             >
               <div className="flex flex-row gap-3 p-3 hover:bg-blue-500 truncate">
                 <RecentIcon />
                 <h3>{item.title}</h3>
               </div>
-            </Link>
+            </NavLink>
           ))}
         </div>
       </div>

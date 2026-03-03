@@ -24,6 +24,8 @@ function Sidebar() {
 
     return () => clearTimeout(delay);
   }, [searchInput]);
+
+  console.log(searchResults);
   return (
     <div className="h-screen flex flex-col justify-between overflow-scroll">
       <div>

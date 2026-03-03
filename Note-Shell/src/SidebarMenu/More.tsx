@@ -1,7 +1,7 @@
 import ArchivedIcon from "../assets/ArchivedIcon";
 import FavoritesIcon from "../assets/FavoritesIcon";
 import TrashIcon from "../assets/TrashIcon";
-import { Link } from "react-router";
+import { Link, NavLink } from "react-router";
 function More() {
   return (
     <>
@@ -10,24 +10,45 @@ function More() {
           <h5 className="text-xs font-semibold">More</h5>
         </div>
         <div className="flex flex-col ">
-          <Link to={"favorites"}>
+          <NavLink
+            to={"favorites"}
+            className={({ isActive }) =>
+              `transition-colors duration-200 ${
+                isActive ? "bg-blue-500 text-white" : "hover:bg-blue-500/40"
+              }`
+            }
+          >
             <div className="flex flex-row gap-3 p-3 hover:bg-blue-500">
               <FavoritesIcon />
               <h3>Favorites</h3>
             </div>
-          </Link>
-          <Link to={"Trash"}>
+          </NavLink>
+          <NavLink
+            to={"Trash"}
+            className={({ isActive }) =>
+              `transition-colors duration-200 ${
+                isActive ? "bg-blue-500 text-white" : "hover:bg-blue-500/40"
+              }`
+            }
+          >
             <div className="flex flex-row gap-3 p-3 hover:bg-blue-500">
               <TrashIcon />
               <h3>Trash</h3>
             </div>
-          </Link>
-          <Link to={"archives"}>
+          </NavLink>
+          <NavLink
+            to={"archives"}
+            className={({ isActive }) =>
+              `transition-colors duration-200 ${
+                isActive ? "bg-blue-500 text-white" : "hover:bg-blue-500/40"
+              }`
+            }
+          >
             <div className="flex flex-row gap-3 p-3 hover:bg-blue-500">
               <ArchivedIcon />
               <h3>Archived Notes</h3>
             </div>
-          </Link>
+          </NavLink>
         </div>
       </div>
     </>

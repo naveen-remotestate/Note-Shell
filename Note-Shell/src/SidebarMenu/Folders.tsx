@@ -2,7 +2,7 @@ import AddFolderIcon from "../assets/AddFolderIcon";
 import CloseFolderIcon from "../assets/CloseFolderIcon";
 import OpenFolderIcon from "../assets/OpenFolderIcon";
 import { useEffect, useState } from "react";
-import { Link } from "react-router";
+import { Link, NavLink } from "react-router";
 import { getFolders } from "../api/get";
 import { patchFolderName } from "../api/patch";
 import TrashIcon from "../assets/TrashIcon";
@@ -67,7 +67,7 @@ function Folders() {
         </div>
         <div className="flex flex-col overflow-y-auto max-h-96 ">
           {folders.map((item) => (
-            <Link
+            <NavLink
               to={`/folders/${item.id}/${item.name}`}
               key={item.id}
               onDoubleClick={(e) => {
@@ -75,7 +75,12 @@ function Folders() {
                 setFolderIdToEdit(item.id);
                 setNewFolderName(item.name);
               }}
-              className="w-full flex flex-row gap-3 p-3 hover:bg-blue-500 items-center"
+              className={({ isActive }) =>
+                `w-full flex flex-row gap-3 p-3 items-center transition-colors duration-200 ${
+                  isActive ? "bg-blue-500 text-white" : "hover:bg-blue-500/40"
+                }`
+              }
+              // className="w-full flex flex-row gap-3 p-3 hover:bg-blue-500 items-center"
             >
               <CloseFolderIcon />
               {folderIdtoEdit === item.id ? (
@@ -121,7 +126,7 @@ function Folders() {
                   </div>
                 </div>
               )}
-            </Link>
+            </NavLink>
           ))}
         </div>
       </div>

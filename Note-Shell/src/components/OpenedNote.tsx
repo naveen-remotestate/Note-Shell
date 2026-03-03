@@ -6,8 +6,13 @@ import { getNoteById } from "../api/get";
 import FavoritesIcon from "../assets/FavoritesIcon";
 import ArchivedIcon from "../assets/ArchivedIcon";
 import TrashIcon from "../assets/TrashIcon";
-import { patchMarkArchive, patchMarkFavorite } from "../api/patch";
+import {
+  patchMarkArchive,
+  patchMarkFavorite,
+  patchNoteName,
+} from "../api/patch";
 import { useNavigate } from "react-router";
+import { deleteNote } from "../api/delete";
 type propType = {
   id: string;
   foldername: string | null;
@@ -55,6 +60,27 @@ function OpenedNote({ id, foldername }: propType) {
     }
   }
 
+  //////////////Editing note title
+  const [isEditingTitle, setIsEditingTitle] = useState(false);
+  const [newTitle, setNewTitle] = useState("");
+
+  async function updateNoteTitle() {
+    if (!note || newTitle.trim() === "") {
+      setIsEditingTitle(false);
+      return;
+    }
+
+    try {
+      await patchNoteName(note.id, newTitle);
+
+      setNote((prev) => (prev ? { ...prev, title: newTitle } : prev));
+    } catch (error) {
+      console.error(error);
+    }
+
+    setIsEditingTitle(false);
+  }
+
   useEffect(() => {
     if (id) {
       async function getdata() {
@@ -69,12 +95,32 @@ function OpenedNote({ id, foldername }: propType) {
 
   return (
     <>
-      <div id="frame18" className="flex flex-col h-full w-full p-12">
+      <div className="flex flex-col h-full w-full p-12">
         <div className="flex flex-row justify-between p-2">
           <div className="flex flex-row">
-            <h1 className="text-headingcolor text-2xl font-SourceSans3 font-semibold">
-              {note?.title}
-            </h1>
+            {isEditingTitle ? (
+              <input
+                autoFocus
+                value={newTitle}
+                onChange={(e) => setNewTitle(e.target.value)}
+                onBlur={updateNoteTitle}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") updateNoteTitle();
+                  if (e.key === "Escape") setIsEditingTitle(false);
+                }}
+                className="bg-transparent border-b border-white outline-none text-2xl font-semibold text-headingcolor"
+              />
+            ) : (
+              <h1
+                onDoubleClick={() => {
+                  setIsEditingTitle(true);
+                  setNewTitle(note?.title || "");
+                }}
+                className="text-headingcolor text-2xl font-SourceSans3 font-semibold cursor-pointer"
+              >
+                {note?.title}
+              </h1>
+            )}
             {note?.isFavorite ? (
               <FavoritesIcon active={note?.isFavorite} />
             ) : (
@@ -136,8 +182,35 @@ function OpenedNote({ id, foldername }: propType) {
                   </div>
                 </li>
                 <div className="border-b border-menutextcolor ml-4 w-8/10"></div>
-                <li className="p-4 flex flex-row gap-3 hover:bg-blue-500  cursor-pointer">
-                  <TrashIcon /> Delete
+                <li
+                  onClick={async (e) => {
+                    e.preventDefault();
+
+                    const confirmDelete = window.confirm(
+                      "Are you sure you want to delete this note?",
+                    );
+
+                    if (!confirmDelete) return;
+
+                    try {
+                      await deleteNote(id);
+
+                      setIsThreeDotOpen(false);
+
+                      // Clear current note
+                      setNote(null);
+
+                      // Navigate back to folder or previous screen
+                      navigate(-1);
+                    } catch (error) {
+                      console.error(error);
+                    }
+                  }}
+                >
+                  <div className="p-4 flex flex-row gap-3 hover:bg-blue-500 cursor-pointer">
+                    <TrashIcon />
+                    <h3>Delete</h3>
+                  </div>
                 </li>
               </ul>
             </div>

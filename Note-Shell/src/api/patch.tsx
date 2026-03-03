@@ -16,3 +16,9 @@ export async function patchMarkArchive(id: string, value: boolean) {
     isArchived: value,
   });
 }
+
+export async function patchNoteName(id: string, notename: string) {
+  await axios.patch(`https://nowted-server.remotestate.com/notes/${id}`, {
+    title: notename,
+  });
+}

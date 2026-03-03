@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Link, useParams } from "react-router";
+import { Link, NavLink, useParams } from "react-router";
 import { getFolderNotesById } from "../api/get";
 function Notes() {
   const paramData = useParams(); //getting ID and Name of folder through params
@@ -42,7 +42,7 @@ function Notes() {
         {allNotes.length != 0 ? (
           <div className="flex flex-col gap-3 pl-4 pr-4">
             {allNotes.map((item) => (
-              <Link
+              <NavLink
                 to={
                   "/folders/" +
                   item.folderId +
@@ -53,7 +53,12 @@ function Notes() {
                   item.id
                 }
                 key={item.id}
-                className="flex flex-col w-full h-fit bg-notesbg justify-center p-3 hover:bg-blue-500"
+                // className="flex flex-col w-full h-fit bg-notesbg justify-center p-3 hover:bg-blue-500"
+                className={({ isActive }) =>
+                  `w-full flex flex-col p-3 transition-colors duration-200 ${
+                    isActive ? "bg-blue-500 text-white" : "hover:bg-blue-500/40"
+                  }`
+                }
               >
                 <h2 className=" w-full font-SourceSans3 font-semibold text-2xl text-headingcolor pl-3 pr-3 truncate">
                   {item.title}
@@ -62,7 +67,7 @@ function Notes() {
                   <h3>{getdate(item.updatedAt)}</h3>
                   <h3>{item.preview}</h3>
                 </div>
-              </Link>
+              </NavLink>
             ))}
           </div>
         ) : (

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Link, useParams } from "react-router";
+import { Link, NavLink, useParams } from "react-router";
 import { getFavorites, getFolderNotesById } from "../api/get";
 
 function Favorites() {
@@ -43,7 +43,7 @@ function Favorites() {
         {allFavoritesNotes.length != 0 ? (
           <div className="flex flex-col gap-3 pl-4 pr-4">
             {allFavoritesNotes.map((item) => (
-              <Link
+              <NavLink
                 to={
                   "/favorites/" +
                   item.folderId +
@@ -53,7 +53,12 @@ function Favorites() {
                   item.id
                 }
                 key={item.id}
-                className="flex flex-col w-full h-fit bg-notesbg justify-center p-3 hover:bg-blue-500"
+                className={({ isActive }) =>
+                  `w-full flex flex-col p-3 h-fit transition-colors duration-200 justify-center ${
+                    isActive ? "bg-blue-500 text-white" : "hover:bg-blue-500/40"
+                  }`
+                }
+                // className="flex flex-col w-full h-fit bg-notesbg justify-center p-3 hover:bg-blue-500"
               >
                 <h2 className=" w-full font-SourceSans3 font-semibold text-2xl text-headingcolor pl-3 pr-3 truncate">
                   {item.title}
@@ -62,7 +67,7 @@ function Favorites() {
                   <h3>{getdate(item.updatedAt)}</h3>
                   <h3>{item.preview}</h3>
                 </div>
-              </Link>
+              </NavLink>
             ))}
           </div>
         ) : (

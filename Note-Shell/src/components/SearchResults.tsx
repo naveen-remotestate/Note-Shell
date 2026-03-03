@@ -1,30 +1,30 @@
 import { useEffect, useState } from "react";
 import { Link, NavLink, useParams } from "react-router";
-import { getArchives } from "../api/get";
-function Archives() {
-  type allArchivesNotesType = {
+import { getFolderNotesById } from "../api/get";
+function searchResults() {
+  const paramData = useParams(); //getting ID and Name of folder through params
+  const folderHeading = paramData?.name;
+  const folderId = paramData.id ? paramData.id : null;
+
+  type allNotesType = {
     id: string;
     folderId: string;
     title: string;
     updatedAt: string;
     preview: string;
-    folder: {
-      name: string;
-    };
   };
-  const paramdata = useParams();
 
-  const [allArchivesNotes, setAllArchivesNotes] = useState<
-    allArchivesNotesType[]
-  >([]);
+  const [allNotes, setAllNotes] = useState<allNotesType[]>([]);
 
   useEffect(() => {
-    async function getdata() {
-      const data = await getArchives();
-      setAllArchivesNotes(data);
+    if (folderId) {
+      async function getdata() {
+        const data = await getFolderNotesById(folderId);
+        setAllNotes(data);
+      }
+      getdata();
     }
-    getdata();
-  }, [paramdata.id]);
+  }, [folderId]);
   function getdate(date: string): string {
     const dateObj = new Date(date);
     return dateObj.toLocaleDateString();
@@ -35,26 +35,27 @@ function Archives() {
         <div>
           {
             <h1 className="text-headingcolor font-SourceSans3 text-2xl p-4 font-semibold ">
-              Archives
+              {folderHeading}
             </h1>
           }
         </div>
-        {allArchivesNotes.length != 0 ? (
+        {allNotes.length != 0 ? (
           <div className="flex flex-col gap-3 pl-4 pr-4">
-            {allArchivesNotes.map((item) => (
+            {allNotes.map((item) => (
               <NavLink
                 to={
-                  "/archives/" +
+                  "/folders/" +
                   item.folderId +
                   "/" +
-                  item.folder.name +
+                  paramData.name +
                   "/" +
+                  "content/" +
                   item.id
                 }
                 key={item.id}
                 // className="flex flex-col w-full h-fit bg-notesbg justify-center p-3 hover:bg-blue-500"
                 className={({ isActive }) =>
-                  `w-full flex flex-col p-3 h-fit transition-colors duration-200 justify-center ${
+                  `w-full flex flex-col p-3 transition-colors duration-200 ${
                     isActive ? "bg-blue-500 text-white" : "hover:bg-blue-500/40"
                   }`
                 }
@@ -71,11 +72,11 @@ function Archives() {
           </div>
         ) : (
           <h2 className="flex justify-center items-center text-menutextcolor ">
-            No Archives
+            This Folder is Empty
           </h2>
         )}
       </div>
     </>
   );
 }
-export default Archives;
+export default searchResults;
