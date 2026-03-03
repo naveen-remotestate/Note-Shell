@@ -5,7 +5,9 @@ import Folders from "../SidebarMenu/Folders";
 import More from "../SidebarMenu/More";
 import Recents from "../SidebarMenu/Recents";
 import { getSearch } from "../api/get";
-import { useLocation } from "react-router";
+import { NavLink, useLocation } from "react-router";
+import ToggleTheme from "./ToggleTheme";
+import CrossIcon from "../assets/CrossIcon";
 //////////////////////edit
 
 type SidebarPropsType = {
@@ -45,20 +47,29 @@ function Sidebar({ setSearchResults, setIsSearching }: SidebarPropsType) {
     <div className="h-screen flex flex-col justify-between overflow-scroll">
       <div>
         <div className=" p-7 flex flex-row  justify-between">
-          <div id="title">
+          <NavLink to={""}>
             <h1 className="text-headingcolor font-KaushanScript text-2xl font-normal ">
               Note-Shell
             </h1>
+          </NavLink>
+          <div>
+            <ToggleTheme />
           </div>
           <div onClick={() => setSearch((prev) => !prev)}>
-            <SearchIcon />
+            {search ? (
+              <div>
+                <CrossIcon className="w-5 h-5 text-menutextcolor hover:text-red-500 transition" />
+              </div>
+            ) : (
+              <SearchIcon className="text-menutextcolor" />
+            )}
           </div>
         </div>
         <div className=" flex flex-col items-center justify-center">
           {search ? (
             <div className="relative w-4/5">
               <div className="absolute inset-y-0 left-3 flex items-center">
-                <SearchIcon />
+                <SearchIcon className="text-menutextcolor" />
               </div>
 
               <input
@@ -77,7 +88,7 @@ function Sidebar({ setSearchResults, setIsSearching }: SidebarPropsType) {
              transition-transform duration-100 hover:bg-blue-500
              active:scale-95"
             >
-              <PlusIcon />
+              <PlusIcon className="text-menutextcolor  transition" />
               New Note
             </button>
           )}
@@ -86,7 +97,9 @@ function Sidebar({ setSearchResults, setIsSearching }: SidebarPropsType) {
         <Recents />
         <Folders />
       </div>
-      <More />
+      <div>
+        <More />
+      </div>
     </div>
   );
 }

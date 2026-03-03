@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import { Link, NavLink, useParams } from "react-router";
-import { getFavorites, getFolderNotesById } from "../api/get";
+import { NavLink, useParams } from "react-router";
+import { getFavorites } from "../api/get";
 
 function Favorites() {
   type allFavoritesNotesType = {
@@ -54,8 +54,10 @@ function Favorites() {
                 }
                 key={item.id}
                 className={({ isActive }) =>
-                  `w-full flex flex-col p-3 h-fit transition-colors duration-200 justify-center ${
-                    isActive ? "bg-blue-500 text-white" : "hover:bg-blue-500/40"
+                  `w-full flex  flex-col p-3 h-fit transition-colors duration-200 justify-center ${
+                    isActive
+                      ? "bg-blue-500 text-white"
+                      : "hover:bg-blue-500/40 bg-notesbg"
                   }`
                 }
                 // className="flex flex-col w-full h-fit bg-notesbg justify-center p-3 hover:bg-blue-500"

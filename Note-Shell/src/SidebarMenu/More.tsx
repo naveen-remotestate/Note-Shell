@@ -1,7 +1,7 @@
 import ArchivedIcon from "../assets/ArchivedIcon";
 import FavoritesIcon from "../assets/FavoritesIcon";
 import TrashIcon from "../assets/TrashIcon";
-import { Link, NavLink } from "react-router";
+import { NavLink } from "react-router";
 function More() {
   return (
     <>
@@ -32,7 +32,7 @@ function More() {
             }
           >
             <div className="flex flex-row gap-3 p-3 hover:bg-blue-500">
-              <TrashIcon />
+              <TrashIcon className="w-5 h-5 text-menutextcolor hover:text-red-500 transition" />
               <h3>Trash</h3>
             </div>
           </NavLink>
@@ -45,7 +45,7 @@ function More() {
             }
           >
             <div className="flex flex-row gap-3 p-3 hover:bg-blue-500">
-              <ArchivedIcon />
+              <ArchivedIcon className="text-menutextcolor hover:text-headingcolor transition" />
               <h3>Archived Notes</h3>
             </div>
           </NavLink>

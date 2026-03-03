@@ -25,7 +25,7 @@ function Recents() {
   return (
     <>
       <div className="flex flex-col text-left ">
-        <div className="flex flex-row justify-between pl-3 pr-3 ">
+        <div className="flex flex-row justify-between pl-3 pr-3 pt-3 ">
           <h5 className="text-xs font-semibold">Recents</h5>
         </div>
         <div className="flex flex-col ">
@@ -48,7 +48,7 @@ function Recents() {
               key={item.id}
             >
               <div className="flex flex-row gap-3 p-3 hover:bg-blue-500 truncate">
-                <RecentIcon />
+                <RecentIcon className="text-menutextcolor transition" />
                 <h3>{item.title}</h3>
               </div>
             </NavLink>

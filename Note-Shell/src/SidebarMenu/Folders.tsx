@@ -2,7 +2,7 @@ import AddFolderIcon from "../assets/AddFolderIcon";
 import CloseFolderIcon from "../assets/CloseFolderIcon";
 import OpenFolderIcon from "../assets/OpenFolderIcon";
 import { useEffect, useState } from "react";
-import { Link, NavLink } from "react-router";
+import { NavLink } from "react-router";
 import { getFolders } from "../api/get";
 import { patchFolderName } from "../api/patch";
 import TrashIcon from "../assets/TrashIcon";
@@ -62,7 +62,7 @@ function Folders() {
         <div className="flex flex-row justify-between pl-3 pr-3 ">
           <h5 className="text-xs font-semibold">Folders</h5>
           <div onClick={AddFolder} className="cursor-pointer">
-            <AddFolderIcon />
+            <AddFolderIcon className="text-headingcolor hover:text-blue-500 transition" />
           </div>
         </div>
         <div className="flex flex-col overflow-y-auto max-h-96 ">
@@ -80,51 +80,49 @@ function Folders() {
                   isActive ? "bg-blue-500 text-white" : "hover:bg-blue-500/40"
                 }`
               }
-              // className="w-full flex flex-row gap-3 p-3 hover:bg-blue-500 items-center"
             >
-              <CloseFolderIcon />
-              {folderIdtoEdit === item.id ? (
-                <input
-                  autoFocus
-                  value={newFoldername}
-                  onChange={(e) => setNewFolderName(e.target.value)}
-                  onBlur={() => updateFolderName(item.id)}
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter") {
-                      updateFolderName(item.id);
-                    }
-                    if (e.key === "Escape") {
-                      setFolderIdToEdit(null);
-                    }
-                  }}
-                  className="bg-transparent border-b border-white outline-none w-full"
-                />
-              ) : (
-                <div className="flex flex-row justify-between w-full">
-                  <div>
-                    <h3>{item.name}</h3>
-                  </div>
-                  <div
-                    onClick={async (e) => {
-                      e.preventDefault();
-                      const confirmDelete = window.confirm(
-                        "Are you sure you want to delete this folder? This will delete all notes inside.",
-                      );
-                      if (confirmDelete) {
-                        try {
-                          await deleteFolder(item.id);
-                          setFolders((prev) =>
-                            prev.filter((f) => f.id !== item.id),
+              {({ isActive }) => (
+                <>
+                  {isActive ? (
+                    <OpenFolderIcon className="text-headingcolor" />
+                  ) : (
+                    <CloseFolderIcon className="text-headingcolor" />
+                  )}
+
+                  {folderIdtoEdit === item.id ? (
+                    <input
+                      autoFocus
+                      value={newFoldername}
+                      onChange={(e) => setNewFolderName(e.target.value)}
+                      onBlur={() => updateFolderName(item.id)}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter") updateFolderName(item.id);
+                        if (e.key === "Escape") setFolderIdToEdit(null);
+                      }}
+                      className="bg-transparent border-b border-white outline-none w-full"
+                    />
+                  ) : (
+                    <div className="flex flex-row justify-between w-full">
+                      <h3>{item.name}</h3>
+                      <div
+                        onClick={async (e) => {
+                          e.preventDefault();
+                          const confirmDelete = window.confirm(
+                            "Are you sure you want to delete this folder?",
                           );
-                        } catch (error) {
-                          console.log(error);
-                        }
-                      }
-                    }}
-                  >
-                    <TrashIcon className="cursor-pointer text-white hover:text-red-500" />
-                  </div>
-                </div>
+                          if (confirmDelete) {
+                            await deleteFolder(item.id);
+                            setFolders((prev) =>
+                              prev.filter((f) => f.id !== item.id),
+                            );
+                          }
+                        }}
+                      >
+                        <TrashIcon className="cursor-pointer hover:text-red-500" />
+                      </div>
+                    </div>
+                  )}
+                </>
               )}
             </NavLink>
           ))}

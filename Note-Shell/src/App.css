@@ -1,16 +1,26 @@
 @import url("https://fonts.googleapis.com/css2?family=Kaushan+Script&family=Spline+Sans&display=swap");
 @import url("https://fonts.googleapis.com/css2?family=Source+Sans+3:ital,wght@0,200..900;1,200..900&display=swap");
 @import "tailwindcss";
-
+@custom-variant dark (&:where(.dark, .dark *));
 @theme {
-  --color-primary: #181818;
-  --color-secondary: #1c1c1c;
+  --color-primary: #ffffff;
+  --color-secondary: #f3f4f6;
+
+  --color-menutextcolor: rgba(0, 0, 0, 0.6);
+  --color-headingcolor: #111827;
+  --color-highlightednotecolor: #e5e7eb;
+  --color-notesbg: rgba(0, 0, 0, 0.03);
+
   --font-KaushanScript: "Kaushan Script";
   --font-SourceSans3: "Source Sans 3";
+}
+
+.dark {
+  --color-primary: #181818;
+  --color-secondary: #1c1c1c;
 
   --color-menutextcolor: rgba(255, 255, 255, 0.6);
   --color-headingcolor: #ffffff;
   --color-highlightednotecolor: #333333;
-
   --color-notesbg: rgba(255, 255, 255, 0.03);
 }

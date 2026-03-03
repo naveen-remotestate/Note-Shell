@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Link, NavLink, useParams } from "react-router";
+import { NavLink, useParams } from "react-router";
 import { getArchives } from "../api/get";
 function Archives() {
   type allArchivesNotesType = {
@@ -55,7 +55,9 @@ function Archives() {
                 // className="flex flex-col w-full h-fit bg-notesbg justify-center p-3 hover:bg-blue-500"
                 className={({ isActive }) =>
                   `w-full flex flex-col p-3 h-fit transition-colors duration-200 justify-center ${
-                    isActive ? "bg-blue-500 text-white" : "hover:bg-blue-500/40"
+                    isActive
+                      ? "bg-blue-500 text-white"
+                      : "hover:bg-blue-500/40 bg-notesbg"
                   }`
                 }
               >

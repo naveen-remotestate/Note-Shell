@@ -130,7 +130,7 @@ function OpenedNote({ id, foldername }: propType) {
 
           <div className="relative">
             <button onClick={() => setIsThreeDotOpen((prev) => !prev)}>
-              <ThreeDotIcon />
+              <ThreeDotIcon className="text-headingcolor hover:text-blue-500 transition" />
             </button>
 
             <div
@@ -146,18 +146,16 @@ function OpenedNote({ id, foldername }: propType) {
                       : markFavorite(id, true)
                   }
                 >
-                  <div className="p-4 flex flex-row gap-3 hover:bg-blue-500 cursor-pointer">
-                    {note?.isFavorite ? (
-                      <>
-                        <FavoritesIcon active={note?.isFavorite} />
-                        <h1>Remove from Favorites</h1>
-                      </>
-                    ) : (
-                      <>
-                        <FavoritesIcon active={note?.isFavorite} />
-                        <h1>Add to Favorites</h1>
-                      </>
-                    )}
+                  <div className="p-4 flex flex-row gap-3 hover:bg-blue-500 cursor-pointer items-center group">
+                    <FavoritesIcon
+                      active={note?.isFavorite}
+                      className="text-menutextcolor group-hover:text-white transition"
+                    />
+                    <h1 className="group-hover:text-white transition">
+                      {note?.isFavorite
+                        ? "Remove from Favorites"
+                        : "Add to Favorites"}
+                    </h1>
                   </div>
                 </li>
                 <li
@@ -170,12 +168,12 @@ function OpenedNote({ id, foldername }: propType) {
                   <div className="p-4 flex flex-row gap-3 hover:bg-blue-500 cursor-pointer">
                     {note?.isArchived ? (
                       <>
-                        <ArchivedIcon />
+                        <ArchivedIcon className="text-menutextcolor hover:text-headingcolor transition" />
                         <h1>Unarchive</h1>
                       </>
                     ) : (
                       <>
-                        <ArchivedIcon />
+                        <ArchivedIcon className="text-menutextcolor hover:text-headingcolor transition" />
                         <h1>Archive</h1>
                       </>
                     )}
@@ -208,7 +206,7 @@ function OpenedNote({ id, foldername }: propType) {
                   }}
                 >
                   <div className="p-4 flex flex-row gap-3 hover:bg-blue-500 cursor-pointer">
-                    <TrashIcon />
+                    <TrashIcon className="w-5 h-5 text-menutextcolor hover:text-red-500 transition" />
                     <h3>Delete</h3>
                   </div>
                 </li>
@@ -221,7 +219,7 @@ function OpenedNote({ id, foldername }: propType) {
           className="flex flex-col gap-3.5 font-SourceSans3 text-sm text-menutextcolor p-2"
         >
           <div id="frame19a" className="flex flex-row gap-5 pt-3 ">
-            <DateIcon />
+            <DateIcon className="text-menutextcolor hover:text-blue-500 transition" />
             <h4>Date</h4>
             <h4 className="text-headingcolor font-semibold  ">
               {date.toLocaleDateString()}
@@ -229,7 +227,7 @@ function OpenedNote({ id, foldername }: propType) {
           </div>
           <div className="border-b bg-secondary"></div>
           <div id="frame19b" className="flex flex-row gap-5 ">
-            <FolderIcon />
+            <FolderIcon className="text-headingcolor hover:text-blue-500 transition" />
             <h4>Folder</h4>
             <h4 className="text-headingcolor font-semibold  ">{foldername}</h4>
           </div>

@@ -25,6 +25,7 @@ function Notes() {
       getdata();
     }
   }, [folderId]);
+
   function getdate(date: string): string {
     const dateObj = new Date(date);
     return dateObj.toLocaleDateString();
@@ -55,8 +56,10 @@ function Notes() {
                 key={item.id}
                 // className="flex flex-col w-full h-fit bg-notesbg justify-center p-3 hover:bg-blue-500"
                 className={({ isActive }) =>
-                  `w-full flex flex-col p-3 transition-colors duration-200 ${
-                    isActive ? "bg-blue-500 text-white" : "hover:bg-blue-500/40"
+                  `w-full flex  flex-col p-3 transition-colors duration-200 ${
+                    isActive
+                      ? "bg-blue-500 text-white"
+                      : "bg-notesbg hover:bg-blue-500/40"
                   }`
                 }
               >

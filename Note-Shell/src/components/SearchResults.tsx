@@ -33,7 +33,9 @@ export default function SearchResults({ results }: propstype) {
               key={item.id}
               className={({ isActive }) =>
                 `w-full flex flex-col p-3 transition-colors duration-200 ${
-                  isActive ? "bg-blue-500 text-white" : "hover:bg-blue-500/40"
+                  isActive
+                    ? "bg-blue-500 text-white"
+                    : "hover:bg-blue-500/40 bg-notesbg"
                 }`
               }
             >

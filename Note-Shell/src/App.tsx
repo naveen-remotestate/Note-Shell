@@ -8,13 +8,14 @@ import Trash from "./components/Trash";
 import Restoretrash from "./components/RestoreTrash";
 import { useState } from "react";
 import SearchResults from "./components/SearchResults";
+import WelcomeNote from "./components/WelcomeNote";
 function App() {
   const [searchResults, setSearchResults] = useState<any[]>([]);
   const [isSearching, setIsSearching] = useState<boolean>(false);
   return (
     <>
       <BrowserRouter>
-        <div className="flex flex-row w-full h-screen overflow-hidden">
+        <div className="flex flex-row w-full h-screen overflow-hidden bg-white dark:bg-neutral-950">
           <div className="bg-primary w-20/100 h-full flex flex-col text-center gap-6 text-menutextcolor font-SourceSans3-600 font-semibold ">
             <Sidebar
               setSearchResults={setSearchResults}
@@ -23,6 +24,18 @@ function App() {
           </div>
 
           <Routes>
+            <Route
+              path=""
+              element={
+                <>
+                  <div className="bg-secondary text-headingcolor w-25/100 h-full flex items-center justify-center">
+                    <WelcomeNote />
+                  </div>
+                  <div className="bg-primary w-55/100 h-full flex"></div>
+                </>
+              }
+            />
+
             <Route
               path="folders/:id/:name?"
               element={
