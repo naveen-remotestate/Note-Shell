@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Link, NavLink, useParams } from "react-router";
+import { NavLink, useParams } from "react-router";
 import { getFolderNotesById } from "../api/get";
 function Notes() {
   const paramData = useParams(); //getting ID and Name of folder through params

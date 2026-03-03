@@ -5,27 +5,42 @@ import Folders from "../SidebarMenu/Folders";
 import More from "../SidebarMenu/More";
 import Recents from "../SidebarMenu/Recents";
 import { getSearch } from "../api/get";
+import { useLocation } from "react-router";
+//////////////////////edit
 
-function Sidebar() {
+type SidebarPropsType = {
+  setSearchResults: React.Dispatch<React.SetStateAction<any[]>>;
+  setIsSearching: React.Dispatch<React.SetStateAction<boolean>>;
+};
+function Sidebar({ setSearchResults, setIsSearching }: SidebarPropsType) {
   const [search, setSearch] = useState(false);
   const [searchInput, setSearchInput] = useState("");
-  const [searchResults, setSearchResults] = useState([]);
+  // const [searchResults, setSearchResults] = useState([]);
+
+  const location = useLocation();
+  useEffect(() => {
+    setSearchInput("");
+    setSearchResults([]);
+    setIsSearching(false);
+  }, [location.pathname]);
 
   useEffect(() => {
     if (!searchInput.trim()) {
       setSearchResults([]);
+      setIsSearching(false);
       return;
     }
 
     const delay = setTimeout(async () => {
       const data = await getSearch(searchInput);
       setSearchResults(data);
+      setIsSearching(true);
     }, 600);
 
     return () => clearTimeout(delay);
   }, [searchInput]);
 
-  console.log(searchResults);
+  // console.log(searchResults); //////////////
   return (
     <div className="h-screen flex flex-col justify-between overflow-scroll">
       <div>

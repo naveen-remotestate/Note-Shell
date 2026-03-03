@@ -6,13 +6,20 @@ import Favorites from "./components/Favorites";
 import Archives from "./components/Archive";
 import Trash from "./components/Trash";
 import Restoretrash from "./components/RestoreTrash";
+import { useState } from "react";
+import SearchResults from "./components/SearchResults";
 function App() {
+  const [searchResults, setSearchResults] = useState<any[]>([]);
+  const [isSearching, setIsSearching] = useState<boolean>(false);
   return (
     <>
       <BrowserRouter>
         <div className="flex flex-row w-full h-screen overflow-hidden">
           <div className="bg-primary w-20/100 h-full flex flex-col text-center gap-6 text-menutextcolor font-SourceSans3-600 font-semibold ">
-            <Sidebar />
+            <Sidebar
+              setSearchResults={setSearchResults}
+              setIsSearching={setIsSearching}
+            />
           </div>
 
           <Routes>
@@ -21,7 +28,11 @@ function App() {
               element={
                 <>
                   <div className="bg-secondary w-25/100 h-full">
-                    <Notes />
+                    {isSearching ? (
+                      <SearchResults results={searchResults} />
+                    ) : (
+                      <Notes />
+                    )}
                   </div>
                   <div className="bg-primary w-55/100 h-full flex">
                     <NoteContent />
@@ -118,7 +129,11 @@ function App() {
               element={
                 <>
                   <div className="bg-secondary w-25/100 h-full">
-                    <Notes />
+                    {isSearching ? (
+                      <SearchResults results={searchResults} />
+                    ) : (
+                      <Notes />
+                    )}
                   </div>
                   <div className="bg-primary w-55/100 h-full flex">
                     <NoteContent />
@@ -131,7 +146,11 @@ function App() {
               element={
                 <>
                   <div className="bg-secondary w-25/100 h-full">
-                    <Notes />
+                    {isSearching ? (
+                      <SearchResults results={searchResults} />
+                    ) : (
+                      <Notes />
+                    )}
                   </div>
                   <div className="bg-primary w-55/100 h-full flex">
                     <NoteContent />
