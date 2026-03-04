@@ -5,6 +5,7 @@ function Notes() {
   const paramData = useParams(); //getting ID and Name of folder through params
   const folderHeading = paramData?.name;
   const folderId = paramData.id ? paramData.id : null;
+  const { noteid } = useParams();
 
   type allNotesType = {
     id: string;
@@ -24,7 +25,7 @@ function Notes() {
       }
       getdata();
     }
-  }, [folderId]);
+  }, [folderId, noteid]);
 
   function getdate(date: string): string {
     const dateObj = new Date(date);

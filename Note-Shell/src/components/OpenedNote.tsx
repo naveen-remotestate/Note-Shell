@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import DateIcon from "../assets/DateIcon";
 import FolderIcon from "../assets/FolderIcon";
 import ThreeDotIcon from "../assets/ThreeDotIcon";
-import { getNoteById } from "../api/get";
+import { getFolderNotesById, getNoteById } from "../api/get";
 import FavoritesIcon from "../assets/FavoritesIcon";
 import ArchivedIcon from "../assets/ArchivedIcon";
 import TrashIcon from "../assets/TrashIcon";
@@ -12,7 +12,7 @@ import {
   patchNoteContent,
   patchNoteName,
 } from "../api/patch";
-import { useNavigate } from "react-router";
+import { useNavigate, useParams } from "react-router";
 import { deleteNote } from "../api/delete";
 type propType = {
   id: string;
@@ -40,13 +40,17 @@ function OpenedNote({ id, foldername }: propType) {
 
       setNote((prev) => (prev ? { ...prev, isFavorite: value } : prev));
       setIsThreeDotOpen(false);
-      if (!value) {
+
+      // Only refresh favorites page
+      if (!value && window.location.pathname.includes("/favorites")) {
         navigate("/favorites");
       }
     } catch (error) {
       console.error(error);
     }
   }
+  const paramdata = useParams();
+  // console.log(paramdata);
   async function markArchive(id: string, value: boolean) {
     try {
       await patchMarkArchive(id, value);
@@ -54,7 +58,9 @@ function OpenedNote({ id, foldername }: propType) {
       setNote((prev) => (prev ? { ...prev, isArchived: value } : prev));
       setIsThreeDotOpen(false);
       if (!value) {
-        navigate("/archives");
+        navigate(-1);
+      } else {
+        navigate(`/folders/${paramdata.id}/${paramdata.name}`);
       }
     } catch (error) {
       console.error(error);
@@ -64,7 +70,7 @@ function OpenedNote({ id, foldername }: propType) {
   //////////////Editing note title
   const [isEditingTitle, setIsEditingTitle] = useState(false);
   const [newTitle, setNewTitle] = useState("");
-
+  //updating note tiltle
   async function updateNoteTitle() {
     if (!note || newTitle.trim() === "") {
       setIsEditingTitle(false);
@@ -75,6 +81,9 @@ function OpenedNote({ id, foldername }: propType) {
       await patchNoteName(note.id, newTitle);
 
       setNote((prev) => (prev ? { ...prev, title: newTitle } : prev));
+
+      // force Notes list refresh
+      navigate(`/folders/${paramdata.id}/${paramdata.name}/content/${note.id}`);
     } catch (error) {
       console.error(error);
     }
@@ -176,6 +185,7 @@ function OpenedNote({ id, foldername }: propType) {
               } rounded-2xl w-55`}
             >
               <ul className="rounded-sm bg-highlightednotecolor text-sm font-semibold text-headingcolor">
+                {/* mark favorite from three dot */}
                 <li
                   onClick={() =>
                     note?.isFavorite
@@ -195,6 +205,8 @@ function OpenedNote({ id, foldername }: propType) {
                     </h1>
                   </div>
                 </li>
+
+                {/* mark archive from three dot */}
                 <li
                   onClick={() =>
                     note?.isArchived
@@ -217,6 +229,8 @@ function OpenedNote({ id, foldername }: propType) {
                   </div>
                 </li>
                 <div className="border-b border-menutextcolor ml-4 w-8/10"></div>
+
+                {/* delete from the threedot */}
                 <li
                   onClick={async (e) => {
                     e.preventDefault();
