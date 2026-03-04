@@ -5,9 +5,10 @@ import Folders from "../SidebarMenu/Folders";
 import More from "../SidebarMenu/More";
 import Recents from "../SidebarMenu/Recents";
 import { getSearch } from "../api/get";
-import { NavLink, useLocation } from "react-router";
+import { NavLink, useLocation, useNavigate, useParams } from "react-router";
 import ToggleTheme from "./ToggleTheme";
 import CrossIcon from "../assets/CrossIcon";
+import { postNote } from "../api/post";
 //////////////////////edit
 
 type SidebarPropsType = {
@@ -42,7 +43,33 @@ function Sidebar({ setSearchResults, setIsSearching }: SidebarPropsType) {
     return () => clearTimeout(delay);
   }, [searchInput]);
 
-  // console.log(searchResults); //////////////
+  // console.log(searchResults);
+  //
+
+  ////////////// add new note
+
+  const navigate = useNavigate();
+
+  async function createNewNote() {
+    const parts = location.pathname.split("/");
+
+    const folderId = parts[2];
+    const folderName = parts[3];
+
+    if (!folderId) {
+      alert("Please select a folder first");
+      return;
+    }
+
+    try {
+      const newNote = await postNote(folderId, "Untitled Note", "");
+
+      navigate(`/folders/${folderId}/${folderName}/content/${newNote.id}`);
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
   return (
     <div className="h-screen flex flex-col justify-between overflow-scroll">
       <div>
@@ -82,7 +109,7 @@ function Sidebar({ setSearchResults, setIsSearching }: SidebarPropsType) {
             </div>
           ) : (
             <button
-              onClick={() => console.log("New note clicked")}
+              onClick={createNewNote}
               className="w-80/100 flex items-center justify-center gap-2.5 
              bg-secondary text-headingcolor py-2 px-4 rounded
              transition-transform duration-100 hover:bg-blue-500
@@ -97,9 +124,7 @@ function Sidebar({ setSearchResults, setIsSearching }: SidebarPropsType) {
         <Recents />
         <Folders />
       </div>
-      <div>
-        <More />
-      </div>
+      <More />
     </div>
   );
 }

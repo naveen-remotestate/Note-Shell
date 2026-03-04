@@ -1,9 +1,7 @@
-import React from "react";
-
-function TrashIcon(props: React.SVGProps<SVGSVGElement>) {
+function TrashIcon() {
   return (
     <svg
-      {...props}
+      className="w-5 h-5 text-menutextcolor hover:text-red-500 transition"
       viewBox="0 0 20 20"
       fill="none"
       stroke="currentColor"

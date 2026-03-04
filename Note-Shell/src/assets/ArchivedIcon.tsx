@@ -1,7 +1,7 @@
-function ArchivedIcon({ className }: { className?: string }) {
+function ArchivedIcon() {
   return (
     <svg
-      className={className}
+      className="text-menutextcolor hover:text-headingcolor transition"
       width="20"
       height="20"
       viewBox="0 0 20 20"

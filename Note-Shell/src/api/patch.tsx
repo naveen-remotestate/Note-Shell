@@ -22,3 +22,9 @@ export async function patchNoteName(id: string, notename: string) {
     title: notename,
   });
 }
+
+export async function patchNoteContent(id: string, value: string) {
+  await axios.patch(`https://nowted-server.remotestate.com/notes/${id}`, {
+    content: value,
+  });
+}

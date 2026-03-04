@@ -96,7 +96,7 @@ function App() {
               }
             />
             <Route
-              path="archives/:id/:title/:noteid"
+              path="archives/:id/:name/:noteid"
               element={
                 <>
                   <div className="bg-secondary w-25/100 h-full">

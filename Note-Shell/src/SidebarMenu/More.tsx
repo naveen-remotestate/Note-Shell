@@ -32,7 +32,7 @@ function More() {
             }
           >
             <div className="flex flex-row gap-3 p-3 hover:bg-blue-500">
-              <TrashIcon className="w-5 h-5 text-menutextcolor hover:text-red-500 transition" />
+              <TrashIcon />
               <h3>Trash</h3>
             </div>
           </NavLink>
@@ -45,7 +45,7 @@ function More() {
             }
           >
             <div className="flex flex-row gap-3 p-3 hover:bg-blue-500">
-              <ArchivedIcon className="text-menutextcolor hover:text-headingcolor transition" />
+              <ArchivedIcon />
               <h3>Archived Notes</h3>
             </div>
           </NavLink>

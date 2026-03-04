@@ -15,3 +15,18 @@ export async function postRestoreNoteById(noteid: string) {
     `https://nowted-server.remotestate.com/notes/${noteid}/restore`,
   );
 }
+
+export async function postNote(
+  folderid: string,
+  title: string,
+  content: string,
+) {
+  const res = await axios.post(`https://nowted-server.remotestate.com/notes`, {
+    folderId: folderid,
+    title: title,
+    content: content,
+    isFavorite: false,
+    isArchived: false,
+  });
+  return res.data;
+}

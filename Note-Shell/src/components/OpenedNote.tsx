@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import DateIcon from "../assets/DateIcon";
 import FolderIcon from "../assets/FolderIcon";
 import ThreeDotIcon from "../assets/ThreeDotIcon";
@@ -9,6 +9,7 @@ import TrashIcon from "../assets/TrashIcon";
 import {
   patchMarkArchive,
   patchMarkFavorite,
+  patchNoteContent,
   patchNoteName,
 } from "../api/patch";
 import { useNavigate } from "react-router";
@@ -80,13 +81,49 @@ function OpenedNote({ id, foldername }: propType) {
 
     setIsEditingTitle(false);
   }
+  ///// edit the content of the note
+  const [noteContent, setNoteContent] = useState("");
 
+  useEffect(() => {
+    if (!note) return;
+
+    const delay = setTimeout(async () => {
+      try {
+        await patchNoteContent(note.id, noteContent);
+      } catch (error) {
+        console.error(error);
+      }
+    }, 800);
+
+    return () => clearTimeout(delay);
+  }, [noteContent]);
+
+  ///seting the text areaa heigth
+  const textareaRef = useRef<HTMLTextAreaElement | null>(null);
+  useEffect(() => {
+    const textarea = textareaRef.current;
+
+    if (!textarea) return;
+
+    textarea.style.height = "auto";
+    textarea.style.height = textarea.scrollHeight + "px";
+  }, [noteContent]);
+  /////////////////////
   useEffect(() => {
     if (id) {
       async function getdata() {
         const data = await getNoteById(id);
+
         setNote(data);
+        setNoteContent(data.content);
+
+        //  start editing title if a new note is coming
+        if (data.title === "Untitled Note") {
+          setIsEditingTitle(true);
+          setNewTitle(data.title);
+        }
       }
+
       getdata();
     }
   }, [id]);
@@ -168,12 +205,12 @@ function OpenedNote({ id, foldername }: propType) {
                   <div className="p-4 flex flex-row gap-3 hover:bg-blue-500 cursor-pointer">
                     {note?.isArchived ? (
                       <>
-                        <ArchivedIcon className="text-menutextcolor hover:text-headingcolor transition" />
+                        <ArchivedIcon />
                         <h1>Unarchive</h1>
                       </>
                     ) : (
                       <>
-                        <ArchivedIcon className="text-menutextcolor hover:text-headingcolor transition" />
+                        <ArchivedIcon />
                         <h1>Archive</h1>
                       </>
                     )}
@@ -206,7 +243,7 @@ function OpenedNote({ id, foldername }: propType) {
                   }}
                 >
                   <div className="p-4 flex flex-row gap-3 hover:bg-blue-500 cursor-pointer">
-                    <TrashIcon className="w-5 h-5 text-menutextcolor hover:text-red-500 transition" />
+                    <TrashIcon />
                     <h3>Delete</h3>
                   </div>
                 </li>
@@ -232,12 +269,20 @@ function OpenedNote({ id, foldername }: propType) {
             <h4 className="text-headingcolor font-semibold  ">{foldername}</h4>
           </div>
         </div>
-        <div className="h-90/100 w-full text-headingcolor p-2">
+        <div className="h-full w-full text-headingcolor p-2">
           <textarea
-            name="postContent"
-            defaultValue={note?.content}
+            ref={textareaRef}
+            value={noteContent}
+            onChange={(e) => setNoteContent(e.target.value)}
             placeholder="Enter Note"
-            className="h-full w-full wrap-normal"
+            className="w-full min-h-30 resize-none overflow-hidden bg-transparent
+            outline-none
+            
+            border border-menutextcolor/30
+            rounded-lg
+            p-3
+           focus:border-blue-500
+            "
           />
         </div>
       </div>
