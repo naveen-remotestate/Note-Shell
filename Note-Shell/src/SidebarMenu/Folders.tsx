@@ -83,11 +83,13 @@ function Folders() {
             >
               {({ isActive }) => (
                 <>
-                  {isActive ? (
-                    <OpenFolderIcon className="text-headingcolor" />
-                  ) : (
-                    <CloseFolderIcon className="text-headingcolor" />
-                  )}
+                  <div>
+                    {isActive ? (
+                      <OpenFolderIcon className="text-headingcolor" />
+                    ) : (
+                      <CloseFolderIcon className="text-headingcolor" />
+                    )}
+                  </div>
 
                   {folderIdtoEdit === item.id ? (
                     <input
@@ -102,9 +104,13 @@ function Folders() {
                       className="bg-transparent border-b border-white outline-none w-full"
                     />
                   ) : (
-                    <div className="flex flex-row justify-between w-full">
-                      <h3>{item.name}</h3>
+                    <div className=" flex items-center justify-between w-full gap-2">
+                      <div className="flex-1 w-0">
+                        <h3 className="truncate">{item.name}</h3>
+                      </div>
+
                       <div
+                        className="flex shrink-0"
                         onClick={async (e) => {
                           e.preventDefault();
                           const confirmDelete = window.confirm(
@@ -118,7 +124,7 @@ function Folders() {
                           }
                         }}
                       >
-                        <TrashIcon className="cursor-pointer hover:text-red-500" />
+                        <TrashIcon />
                       </div>
                     </div>
                   )}

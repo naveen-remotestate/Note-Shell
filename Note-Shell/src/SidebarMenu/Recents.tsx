@@ -48,8 +48,10 @@ function Recents() {
               key={item.id}
             >
               <div className="flex flex-row gap-3 p-3 hover:bg-blue-500 truncate">
-                <RecentIcon className="text-menutextcolor transition" />
-                <h3>{item.title}</h3>
+                <div>
+                  <RecentIcon className="text-menutextcolor transition" />
+                </div>
+                <h3 className="truncate ">{item.title}</h3>
               </div>
             </NavLink>
           ))}

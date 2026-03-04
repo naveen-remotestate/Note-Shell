@@ -35,7 +35,7 @@ function Notes() {
       <div className="overflow-y-auto flex flex-col h-screen">
         <div>
           {
-            <h1 className="text-headingcolor font-SourceSans3 text-2xl p-4 font-semibold ">
+            <h1 className="text-headingcolor truncate overflow-scroll font-SourceSans3 text-2xl p-4 font-semibold ">
               {folderHeading}
             </h1>
           }
@@ -63,7 +63,7 @@ function Notes() {
                   }`
                 }
               >
-                <h2 className=" w-full font-SourceSans3 font-semibold text-2xl text-headingcolor pl-3 pr-3 truncate">
+                <h2 className=" w-full font-SourceSans3 overflow-hidden font-semibold text-2xl text-headingcolor pl-3 pr-3 truncate">
                   {item.title}
                 </h2>
                 <div className="flex flex-row overflow-hidden font-SourceSans3 text-menutextcolor p-3 gap-4">

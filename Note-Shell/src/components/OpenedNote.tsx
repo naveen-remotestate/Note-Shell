@@ -134,7 +134,7 @@ function OpenedNote({ id, foldername }: propType) {
     <>
       <div className="flex flex-col h-full w-full p-12">
         <div className="flex flex-row justify-between p-2">
-          <div className="flex flex-row">
+          <div className="flex flex-row truncate w-8/10 overflow-scroll ">
             {isEditingTitle ? (
               <input
                 autoFocus
@@ -264,9 +264,13 @@ function OpenedNote({ id, foldername }: propType) {
           </div>
           <div className="border-b bg-secondary"></div>
           <div id="frame19b" className="flex flex-row gap-5 ">
-            <FolderIcon className="text-headingcolor hover:text-blue-500 transition" />
+            <div>
+              <FolderIcon className="text-headingcolor hover:text-blue-500 transition" />
+            </div>
             <h4>Folder</h4>
-            <h4 className="text-headingcolor font-semibold  ">{foldername}</h4>
+            <h4 className="text-headingcolor truncate w-3xs font-semibold  ">
+              {foldername}
+            </h4>
           </div>
         </div>
         <div className="h-full w-full text-headingcolor p-2">

@@ -5,7 +5,7 @@ import Folders from "../SidebarMenu/Folders";
 import More from "../SidebarMenu/More";
 import Recents from "../SidebarMenu/Recents";
 import { getSearch } from "../api/get";
-import { NavLink, useLocation, useNavigate, useParams } from "react-router";
+import { NavLink, useLocation, useNavigate } from "react-router";
 import ToggleTheme from "./ToggleTheme";
 import CrossIcon from "../assets/CrossIcon";
 import { postNote } from "../api/post";
