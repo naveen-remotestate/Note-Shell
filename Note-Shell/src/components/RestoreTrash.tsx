@@ -27,7 +27,7 @@ export default function Restoretrash() {
         <div>
           <RestoreIcon />
         </div>
-        <div>
+        <div className="overflow-scroll truncate w-3xl">
           <h1 className="font-SourceSans3 text-3xl font-semibold text-headingcolor">
             Restore{`"${paramdata.name ? paramdata.name : "Untitled Note"}"`}
           </h1>

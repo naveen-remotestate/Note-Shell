@@ -51,10 +51,10 @@ function Sidebar({ setSearchResults, setIsSearching }: SidebarPropsType) {
   const navigate = useNavigate();
 
   async function createNewNote() {
-    const parts = location.pathname.split("/");
+    const partsOfUrl = location.pathname.split("/");
 
-    const folderId = parts[2];
-    const folderName = parts[3];
+    const folderId = partsOfUrl[2];
+    const folderName = partsOfUrl[3];
 
     if (!folderId) {
       alert("Please select a folder first");

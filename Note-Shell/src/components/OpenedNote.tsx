@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import DateIcon from "../assets/DateIcon";
 import FolderIcon from "../assets/FolderIcon";
 import ThreeDotIcon from "../assets/ThreeDotIcon";
-import { getFolderNotesById, getNoteById } from "../api/get";
+import { getNoteById } from "../api/get";
 import FavoritesIcon from "../assets/FavoritesIcon";
 import ArchivedIcon from "../assets/ArchivedIcon";
 import TrashIcon from "../assets/TrashIcon";
@@ -33,15 +33,13 @@ function OpenedNote({ id, foldername }: propType) {
   const [isThreeDotOpen, setIsThreeDotOpen] = useState(false);
 
   const navigate = useNavigate();
-
+  //mark the note as fav or unfav
   async function markFavorite(id: string, value: boolean) {
     try {
       await patchMarkFavorite(id, value);
 
       setNote((prev) => (prev ? { ...prev, isFavorite: value } : prev));
       setIsThreeDotOpen(false);
-
-      // Only refresh favorites page
       if (!value && window.location.pathname.includes("/favorites")) {
         navigate("/favorites");
       }
@@ -51,6 +49,7 @@ function OpenedNote({ id, foldername }: propType) {
   }
   const paramdata = useParams();
   // console.log(paramdata);
+  // function to mark a note as archive or unarchive
   async function markArchive(id: string, value: boolean) {
     try {
       await patchMarkArchive(id, value);
@@ -79,15 +78,11 @@ function OpenedNote({ id, foldername }: propType) {
 
     try {
       await patchNoteName(note.id, newTitle);
-
       setNote((prev) => (prev ? { ...prev, title: newTitle } : prev));
-
-      // force Notes list refresh
       navigate(`/folders/${paramdata.id}/${paramdata.name}/content/${note.id}`);
     } catch (error) {
       console.error(error);
     }
-
     setIsEditingTitle(false);
   }
   ///// edit the content of the note
@@ -123,11 +118,11 @@ function OpenedNote({ id, foldername }: propType) {
       async function getdata() {
         const data = await getNoteById(id);
 
-        setNote(data);
-        setNoteContent(data.content);
+        setNote(data); //this is the whole note
+        setNoteContent(data.content); //this is the content of the note
 
         //  start editing title if a new note is coming
-        if (data.title === "Untitled Note") {
+        if (data.title === "Untitled Note" || data.title === "") {
           setIsEditingTitle(true);
           setNewTitle(data.title);
         }
@@ -145,6 +140,7 @@ function OpenedNote({ id, foldername }: propType) {
         <div className="flex flex-row justify-between p-2">
           <div className="flex flex-row truncate w-8/10 overflow-scroll ">
             {isEditingTitle ? (
+              //Note title and editing it
               <input
                 autoFocus
                 value={newTitle}
@@ -173,12 +169,12 @@ function OpenedNote({ id, foldername }: propType) {
               <></>
             )}
           </div>
-
+          {/* Three Dot Button */}
           <div className="relative">
             <button onClick={() => setIsThreeDotOpen((prev) => !prev)}>
               <ThreeDotIcon className="text-headingcolor hover:text-blue-500 transition" />
             </button>
-
+            {/* threedot button menu list */}
             <div
               className={`absolute right-0 mt-2 z-10 ${
                 isThreeDotOpen ? "block" : "hidden"
@@ -243,12 +239,8 @@ function OpenedNote({ id, foldername }: propType) {
 
                     try {
                       await deleteNote(id);
-
                       setIsThreeDotOpen(false);
-
-                      // Clear current note
                       setNote(null);
-
                       // Navigate back to folder or previous screen
                       navigate(-1);
                     } catch (error) {

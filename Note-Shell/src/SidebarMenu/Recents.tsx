@@ -35,7 +35,7 @@ function Recents() {
                 "/folders/" +
                 item.folderId +
                 "/" +
-                item.folder.name + //put folder name here
+                item.folder.name +
                 "/" +
                 "content/" +
                 item.id
