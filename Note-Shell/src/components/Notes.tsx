@@ -32,17 +32,18 @@ function Notes() {
     return dateObj.toLocaleDateString();
   }
   return (
-    <>
-      <div className="overflow-y-auto flex flex-col h-screen">
-        <div>
-          {
-            <h1 className="text-headingcolor truncate overflow-scroll font-SourceSans3 text-2xl p-4 font-semibold ">
-              {folderHeading}
-            </h1>
-          }
-        </div>
-        {allNotes.length != 0 ? (
-          <div className="flex flex-col gap-3 pl-4 pr-4">
+    <div className="flex flex-col h-full w-full">
+      {/* Fixed Title */}
+      <div>
+        <h1 className="text-headingcolor overflow-x-auto no-scrollbar font-SourceSans3 text-2xl p-4 font-semibold mr-5">
+          {folderHeading}
+        </h1>
+      </div>
+
+      {/* Scrollable Notes */}
+      <div className="flex-1 overflow-y-auto no-scrollbar">
+        {allNotes.length !== 0 ? (
+          <div className="flex flex-col gap-3 pl-4 pr-4 pb-4">
             {allNotes.map((item) => (
               <NavLink
                 to={
@@ -55,32 +56,32 @@ function Notes() {
                   item.id
                 }
                 key={item.id}
-                // className="flex flex-col w-full h-fit bg-notesbg justify-center p-3 hover:bg-blue-500"
                 className={({ isActive }) =>
-                  `w-full flex  flex-col p-3 transition-colors duration-200 ${
+                  `w-full flex flex-col p-3 transition-colors duration-200 ${
                     isActive
                       ? "bg-blue-500 text-white"
                       : "bg-notesbg hover:bg-blue-500/40"
                   }`
                 }
               >
-                <h2 className=" w-full font-SourceSans3 overflow-hidden font-semibold text-2xl text-headingcolor pl-3 pr-3 truncate">
+                <h2 className="w-full font-SourceSans3 overflow-hidden font-semibold text-2xl text-headingcolor pl-3 pr-3 truncate">
                   {item.title}
                 </h2>
+
                 <div className="flex flex-row overflow-hidden font-SourceSans3 text-menutextcolor p-3 gap-4">
                   <h3>{getdate(item.updatedAt)}</h3>
-                  <h3>{item.preview}</h3>
+                  <h3 className="truncate">{item.preview}</h3>
                 </div>
               </NavLink>
             ))}
           </div>
         ) : (
-          <h2 className="flex justify-center items-center text-menutextcolor ">
+          <h2 className="flex justify-center items-center text-menutextcolor h-full">
             This Folder is Empty
           </h2>
         )}
       </div>
-    </>
+    </div>
   );
 }
 export default Notes;

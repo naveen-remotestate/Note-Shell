@@ -27,7 +27,7 @@ export default function Restoretrash() {
         <div>
           <RestoreIcon />
         </div>
-        <div className="overflow-scroll truncate w-3xl">
+        <div className="overflow-scroll no-scrollbar truncate w-3xl">
           <h1 className="font-SourceSans3 text-3xl font-semibold text-headingcolor">
             Restore{`"${paramdata.name ? paramdata.name : "Untitled Note"}"`}
           </h1>
@@ -43,7 +43,7 @@ export default function Restoretrash() {
           <button
             onClick={() => restoreNote(noteid)}
             className={`text-white rounded font-medium transition-transform duration-100 active:scale-95 text-sm px-4 py-2.5 ${
-              isRestored ? "bg-green-500 " : "bg-blue-500 hover:bg-emerald-500"
+              isRestored ? "bg-blue-500 " : "bg-blue-500 hover:bg-blue-500/40"
             }`}
             disabled={isRestored}
           >

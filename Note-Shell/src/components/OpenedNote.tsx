@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import DateIcon from "../assets/DateIcon";
 import FolderIcon from "../assets/FolderIcon";
 import ThreeDotIcon from "../assets/ThreeDotIcon";
-import { getNoteById } from "../api/get";
+import { getFolders, getNoteById } from "../api/get";
 import FavoritesIcon from "../assets/FavoritesIcon";
 import ArchivedIcon from "../assets/ArchivedIcon";
 import TrashIcon from "../assets/TrashIcon";
@@ -14,6 +14,8 @@ import {
 } from "../api/patch";
 import { useNavigate, useParams } from "react-router";
 import { deleteNote } from "../api/delete";
+import DropdownArrowIcon from "../assets/DropdownArrowIcon";
+
 type propType = {
   id: string;
   foldername: string | null;
@@ -29,17 +31,21 @@ function OpenedNote({ id, foldername }: propType) {
     createdAt: string;
     updatedAt: string;
   };
+
   const [note, setNote] = useState<noteType | null>(null);
   const [isThreeDotOpen, setIsThreeDotOpen] = useState(false);
+  const [isfolderDropdown, setIsFolderDropDown] = useState(false);
 
   const navigate = useNavigate();
-  //mark the note as fav or unfav
+  const paramdata = useParams();
+
   async function markFavorite(id: string, value: boolean) {
     try {
       await patchMarkFavorite(id, value);
 
       setNote((prev) => (prev ? { ...prev, isFavorite: value } : prev));
       setIsThreeDotOpen(false);
+
       if (!value && window.location.pathname.includes("/favorites")) {
         navigate("/favorites");
       }
@@ -47,15 +53,14 @@ function OpenedNote({ id, foldername }: propType) {
       console.error(error);
     }
   }
-  const paramdata = useParams();
-  // console.log(paramdata);
-  // function to mark a note as archive or unarchive
+
   async function markArchive(id: string, value: boolean) {
     try {
       await patchMarkArchive(id, value);
 
       setNote((prev) => (prev ? { ...prev, isArchived: value } : prev));
       setIsThreeDotOpen(false);
+
       if (!value) {
         navigate(-1);
       } else {
@@ -66,10 +71,10 @@ function OpenedNote({ id, foldername }: propType) {
     }
   }
 
-  //////////////Editing note title
+  // title editing
   const [isEditingTitle, setIsEditingTitle] = useState(false);
   const [newTitle, setNewTitle] = useState("");
-  //updating note tiltle
+
   async function updateNoteTitle() {
     if (!note || newTitle.trim() === "") {
       setIsEditingTitle(false);
@@ -83,9 +88,11 @@ function OpenedNote({ id, foldername }: propType) {
     } catch (error) {
       console.error(error);
     }
+
     setIsEditingTitle(false);
   }
-  ///// edit the content of the note
+
+  // note content
   const [noteContent, setNoteContent] = useState("");
 
   useEffect(() => {
@@ -102,26 +109,16 @@ function OpenedNote({ id, foldername }: propType) {
     return () => clearTimeout(delay);
   }, [noteContent]);
 
-  ///seting the text areaa heigth
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
-  useEffect(() => {
-    const textarea = textareaRef.current;
 
-    if (!textarea) return;
-
-    textarea.style.height = "auto";
-    textarea.style.height = textarea.scrollHeight + "px";
-  }, [noteContent]);
-  /////////////////////
   useEffect(() => {
     if (id) {
       async function getdata() {
         const data = await getNoteById(id);
 
-        setNote(data); //this is the whole note
-        setNoteContent(data.content); //this is the content of the note
+        setNote(data);
+        setNoteContent(data.content);
 
-        //  start editing title if a new note is coming
         if (data.title === "Untitled Note" || data.title === "") {
           setIsEditingTitle(true);
           setNewTitle(data.title);
@@ -131,16 +128,33 @@ function OpenedNote({ id, foldername }: propType) {
       getdata();
     }
   }, [id]);
-  // const getdate:string|null =note?.updatedAt?
+
   const date = new Date(note?.updatedAt ? note.updatedAt : "");
+
+  // folders
+  type folderType = {
+    id: string;
+    name: string;
+  };
+
+  const [folders, setFolders] = useState<folderType[]>([]);
+
+  useEffect(() => {
+    async function getdata() {
+      const data = await getFolders();
+      setFolders(data);
+    }
+    getdata();
+  }, []);
 
   return (
     <>
-      <div className="flex flex-col h-full w-full p-12">
-        <div className="flex flex-row justify-between p-2">
-          <div className="flex flex-row truncate w-8/10 overflow-scroll ">
+      <div className="flex flex-col h-screen w-full p-12">
+        {/* Header-title and threedot button*/}
+        <div className="flex flex-row justify-between p-2 ">
+          {/* Note title with editing */}
+          <div className="flex flex-row truncate w-8/10 overflow-scroll no-scrollbar ">
             {isEditingTitle ? (
-              //Note title and editing it
               <input
                 autoFocus
                 value={newTitle}
@@ -163,25 +177,22 @@ function OpenedNote({ id, foldername }: propType) {
                 {note?.title}
               </h1>
             )}
-            {note?.isFavorite ? (
-              <FavoritesIcon active={note?.isFavorite} />
-            ) : (
-              <></>
-            )}
+
+            {note?.isFavorite && <FavoritesIcon active={note?.isFavorite} />}
           </div>
-          {/* Three Dot Button */}
+
+          {/* three dot */}
           <div className="relative">
             <button onClick={() => setIsThreeDotOpen((prev) => !prev)}>
               <ThreeDotIcon className="text-headingcolor hover:text-blue-500 transition" />
             </button>
-            {/* threedot button menu list */}
+
             <div
               className={`absolute right-0 mt-2 z-10 ${
                 isThreeDotOpen ? "block" : "hidden"
               } rounded-2xl w-55`}
             >
               <ul className="rounded-sm bg-highlightednotecolor text-sm font-semibold text-headingcolor">
-                {/* mark favorite from three dot */}
                 <li
                   onClick={() =>
                     note?.isFavorite
@@ -202,7 +213,6 @@ function OpenedNote({ id, foldername }: propType) {
                   </div>
                 </li>
 
-                {/* mark archive from three dot */}
                 <li
                   onClick={() =>
                     note?.isArchived
@@ -211,22 +221,13 @@ function OpenedNote({ id, foldername }: propType) {
                   }
                 >
                   <div className="p-4 flex flex-row gap-3 hover:bg-blue-500 cursor-pointer">
-                    {note?.isArchived ? (
-                      <>
-                        <ArchivedIcon />
-                        <h1>Unarchive</h1>
-                      </>
-                    ) : (
-                      <>
-                        <ArchivedIcon />
-                        <h1>Archive</h1>
-                      </>
-                    )}
+                    <ArchivedIcon />
+                    <h1>{note?.isArchived ? "Unarchive" : "Archive"}</h1>
                   </div>
                 </li>
+
                 <div className="border-b border-menutextcolor ml-4 w-8/10"></div>
 
-                {/* delete from the threedot */}
                 <li
                   onClick={async (e) => {
                     e.preventDefault();
@@ -241,8 +242,9 @@ function OpenedNote({ id, foldername }: propType) {
                       await deleteNote(id);
                       setIsThreeDotOpen(false);
                       setNote(null);
-                      // Navigate back to folder or previous screen
-                      navigate(-1);
+                      navigate(
+                        `/trash/${paramdata.id}/${note?.title}/${paramdata.noteid}`,
+                      );
                     } catch (error) {
                       console.error(error);
                     }
@@ -257,41 +259,67 @@ function OpenedNote({ id, foldername }: propType) {
             </div>
           </div>
         </div>
-        <div
-          id="frame20"
-          className="flex flex-col gap-3.5 font-SourceSans3 text-sm text-menutextcolor p-2"
-        >
-          <div id="frame19a" className="flex flex-row gap-5 pt-3 ">
+        {/* header- date and folder */}
+        <div className="flex flex-col gap-3.5 font-SourceSans3 text-sm text-menutextcolor p-2">
+          <div className="flex flex-row gap-5 pt-3">
             <DateIcon className="text-menutextcolor hover:text-blue-500 transition" />
             <h4>Date</h4>
-            <h4 className="text-headingcolor font-semibold  ">
+            <h4 className="text-headingcolor font-semibold">
               {date.toLocaleDateString()}
             </h4>
           </div>
+
           <div className="border-b bg-secondary"></div>
-          <div id="frame19b" className="flex flex-row gap-5 ">
-            <div>
-              <FolderIcon className="text-headingcolor hover:text-blue-500 transition" />
-            </div>
+
+          <div className="flex flex-row gap-5">
+            <FolderIcon className="text-headingcolor hover:text-blue-500 transition" />
             <h4>Folder</h4>
-            <h4 className="text-headingcolor truncate w-3xs font-semibold  ">
-              {foldername}
-            </h4>
+
+            <div className="text-headingcolor truncate w-3xs font-semibold">
+              <button
+                className="flex flex-row"
+                onClick={() => setIsFolderDropDown((prev) => !prev)}
+              >
+                {foldername}
+                <DropdownArrowIcon />
+              </button>
+
+              <div
+                className={`absolute bg-secondary overflow-hidden truncate mt-2 z-10 ${
+                  isfolderDropdown ? "block" : "hidden"
+                } rounded-2xl w-55`}
+              >
+                <ul className="p-2 text-sm text-body font-medium">
+                  {folders.map((items) => (
+                    <li key={items.id} className="hover:bg-blue-400">
+                      {items.name}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </div>
           </div>
         </div>
-        <div className="h-full w-full text-headingcolor p-2">
+
+        {/* text area */}
+        <div className="flex-1 min-h-0 w-full text-headingcolor p-2">
           <textarea
             ref={textareaRef}
             value={noteContent}
             onChange={(e) => setNoteContent(e.target.value)}
             placeholder="Enter Note"
-            className="w-full min-h-30 resize-none overflow-hidden bg-transparent
-            outline-none
-            
-            border border-menutextcolor/30
-            rounded-lg
-            p-3
-           focus:border-blue-500
+            className="
+              w-full
+              h-full
+              resize-none
+              overflow-y-auto
+              no-scrollbar
+              bg-transparent
+              outline-none
+              border border-menutextcolor/30
+              rounded-lg
+              p-3
+              focus:border-blue-500
             "
           />
         </div>
@@ -299,4 +327,5 @@ function OpenedNote({ id, foldername }: propType) {
     </>
   );
 }
+
 export default OpenedNote;

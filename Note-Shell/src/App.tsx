@@ -35,7 +35,7 @@ function App() {
                 </>
               }
             />
-
+            {/* for notes or search results both*/}
             <Route
               path="folders/:id/:name?"
               element={

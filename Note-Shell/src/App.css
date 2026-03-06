@@ -24,3 +24,13 @@
   --color-highlightednotecolor: #333333;
   --color-notesbg: rgba(255, 255, 255, 0.03);
 }
+
+@layer utilities {
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+}

@@ -10,7 +10,7 @@ function NoteContent() {
   // console.log(foldername);
   return (
     <>
-      <div className="overflow-scroll w-full">
+      <div className="overflow-scroll no-scrollbar  w-full">
         {noteId ? (
           <div>
             <OpenedNote id={noteId} foldername={foldername} />

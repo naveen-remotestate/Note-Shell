@@ -9,7 +9,6 @@ import { NavLink, useLocation, useNavigate } from "react-router";
 import ToggleTheme from "./ToggleTheme";
 import CrossIcon from "../assets/CrossIcon";
 import { postNote } from "../api/post";
-//////////////////////edit
 
 type SidebarPropsType = {
   setSearchResults: React.Dispatch<React.SetStateAction<any[]>>;
@@ -21,10 +20,11 @@ function Sidebar({ setSearchResults, setIsSearching }: SidebarPropsType) {
   // const [searchResults, setSearchResults] = useState([]);
 
   const location = useLocation();
+  //At Begining
   useEffect(() => {
-    setSearchInput("");
-    setSearchResults([]);
-    setIsSearching(false);
+    setSearchInput(""); //empty
+    setSearchResults([]); //empty
+    setIsSearching(false); //false
   }, [location.pathname]);
 
   useEffect(() => {
@@ -33,7 +33,7 @@ function Sidebar({ setSearchResults, setIsSearching }: SidebarPropsType) {
       setIsSearching(false);
       return;
     }
-
+    //applied delay of 600ms for search
     const delay = setTimeout(async () => {
       const data = await getSearch(searchInput);
       setSearchResults(data);
@@ -44,12 +44,9 @@ function Sidebar({ setSearchResults, setIsSearching }: SidebarPropsType) {
   }, [searchInput]);
 
   // console.log(searchResults);
-  //
-
-  ////////////// add new note
 
   const navigate = useNavigate();
-
+  //creating note
   async function createNewNote() {
     const partsOfUrl = location.pathname.split("/");
 
@@ -71,7 +68,7 @@ function Sidebar({ setSearchResults, setIsSearching }: SidebarPropsType) {
   }
 
   return (
-    <div className="h-screen flex flex-col justify-between overflow-scroll">
+    <div className=" h-screen flex flex-col ">
       <div>
         <div className=" p-7 flex flex-row  justify-between">
           <NavLink to={""}>
@@ -122,6 +119,8 @@ function Sidebar({ setSearchResults, setIsSearching }: SidebarPropsType) {
         </div>
 
         <Recents />
+      </div>
+      <div className="flex-1 min-h-17">
         <Folders />
       </div>
       <More />

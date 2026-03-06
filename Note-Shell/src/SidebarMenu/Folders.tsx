@@ -17,7 +17,7 @@ function Folders() {
   const [folders, setFolders] = useState<folderType[]>([]);
   const [newFoldername, setNewFolderName] = useState<string>("");
   const [folderIdtoEdit, setFolderIdToEdit] = useState<string | null>("");
-
+  // function for updating foldername
   async function updateFolderName(id: string) {
     if (newFoldername.trim() === "") {
       setFolderIdToEdit(null);
@@ -43,7 +43,7 @@ function Folders() {
     }
     getdata();
   }, []);
-
+  //add new folder
   const AddFolder = async () => {
     const name = prompt("Enter folder name");
     if (!name || !name.trim()) return;
@@ -58,14 +58,14 @@ function Folders() {
 
   return (
     <>
-      <div className="flex flex-col text-left overflow-scroll ">
+      <div className="flex flex-col h-full text-left ">
         <div className="flex flex-row justify-between pl-3 pr-3 ">
           <h5 className="text-xs font-semibold">Folders</h5>
           <div onClick={AddFolder} className="cursor-pointer">
             <AddFolderIcon className="text-headingcolor hover:text-blue-500 transition" />
           </div>
         </div>
-        <div className="flex flex-col overflow-y-auto max-h-96 ">
+        <div className="flex flex-col group flex-1 overflow-y-auto no-scrollbar">
           {folders.map((item) => (
             <NavLink
               to={`/folders/${item.id}/${item.name}`}
@@ -76,7 +76,7 @@ function Folders() {
                 setNewFolderName(item.name);
               }}
               className={({ isActive }) =>
-                `w-full flex flex-row gap-3 p-3 items-center transition-colors duration-200 ${
+                `w-full flex flex-row gap-3 p-3 group items-center transition-colors duration-200 ${
                   isActive ? "bg-blue-500 text-white" : "hover:bg-blue-500/40"
                 }`
               }
@@ -101,16 +101,16 @@ function Folders() {
                         if (e.key === "Enter") updateFolderName(item.id);
                         if (e.key === "Escape") setFolderIdToEdit(null);
                       }}
-                      className="bg-transparent border-b border-white outline-none w-full"
+                      className="bg-transparent border-b group border-white outline-none w-full"
                     />
                   ) : (
-                    <div className=" flex items-center justify-between w-full gap-2">
+                    <div className=" flex items-center group justify-between w-full gap-2">
                       <div className="flex-1 w-0">
                         <h3 className="truncate">{item.name}</h3>
                       </div>
 
                       <div
-                        className="flex shrink-0"
+                        className="flex opacity-0 group-hover:opacity-100 shrink-0"
                         onClick={async (e) => {
                           e.preventDefault();
                           const confirmDelete = window.confirm(
