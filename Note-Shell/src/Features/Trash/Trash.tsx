@@ -1,6 +1,6 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { NavLink } from "react-router";
-import { getTrash } from "../api/get";
+import { getTrash } from "../../api/NotesApi";
 function Trash() {
   type allTrashNotesType = {
     id: string;
@@ -14,14 +14,58 @@ function Trash() {
   };
 
   const [allTrashNotes, setAllTrashNotes] = useState<allTrashNotesType[]>([]);
+  const [page, setPage] = useState(1);
+  const [loading, setLoading] = useState(false);
+
+  const observerRef = useRef<HTMLDivElement | null>(null);
+
+  async function getAllTrash(pageNumber: number) {
+    if (loading) return;
+
+    setLoading(true);
+
+    const data = await getTrash(pageNumber, 15);
+
+    if (!data || data.length === 0) {
+      setLoading(false);
+      return;
+    }
+
+    setAllTrashNotes((prev) => {
+      const ids = new Set(prev.map((n) => n.id));
+      const filtered = data.filter((n: allTrashNotesType) => !ids.has(n.id));
+      return [...prev, ...filtered];
+    });
+
+    setLoading(false);
+  }
 
   useEffect(() => {
-    async function getdata() {
-      const data = await getTrash();
-      setAllTrashNotes(data);
+    getAllTrash(page);
+  }, [page]);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const entry = entries[0];
+
+        if (entry.isIntersecting && !loading) {
+          setPage((prev) => prev + 1);
+        }
+      },
+      {
+        root: null,
+        rootMargin: "200px",
+      },
+    );
+
+    if (observerRef.current) {
+      observer.observe(observerRef.current);
     }
-    getdata();
-  }, []);
+
+    return () => observer.disconnect();
+  }, [loading]);
+
   function getdate(date: string): string {
     const dateObj = new Date(date);
     return dateObj.toLocaleDateString();
@@ -36,19 +80,19 @@ function Trash() {
         </div>
         <div className="flex-1 overflow-y-auto no-scrollbar">
           {allTrashNotes.length != 0 ? (
-            <div className="flex flex-col gap-3 pl-4 pr-4">
+            <div className="flex flex-col gap-3 pl-4 pr-4 pb-4">
               {allTrashNotes.map((item) => (
                 <NavLink
                   to={
                     "/trash/" + item.folderId + "/" + item.title + "/" + item.id
                   }
                   key={item.id}
-                  // className="flex flex-col w-full h-fit bg-notesbg justify-center p-3 hover:bg-blue-500"
+                  // className="flex flex-col w-full h-fit bg-notesbg justify-center p-3 hover:bg-activecolor"
                   className={({ isActive }) =>
                     `w-full flex flex-col p-3 h-fit transition-colors duration-200 justify-center ${
                       isActive
-                        ? "bg-blue-500 text-white"
-                        : "hover:bg-blue-500/40 bg-notesbg"
+                        ? "bg-activecolor text-white"
+                        : "hover:bg-activecolor/40 bg-notesbg"
                     }`
                   }
                 >
@@ -61,6 +105,7 @@ function Trash() {
                   </div>
                 </NavLink>
               ))}
+              <div ref={observerRef} className="h-10"></div>
             </div>
           ) : (
             <h2 className="flex justify-center items-center text-menutextcolor ">

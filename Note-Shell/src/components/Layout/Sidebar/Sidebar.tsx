@@ -1,14 +1,15 @@
 import { useEffect, useState } from "react";
-import PlusIcon from "../assets/PlusIcon";
-import SearchIcon from "../assets/SearchIcon";
-import Folders from "../SidebarMenu/Folders";
-import More from "../SidebarMenu/More";
-import Recents from "../SidebarMenu/Recents";
-import { getSearch } from "../api/get";
+import PlusIcon from "../../../assets / Icons/PlusIcon";
+import SearchIcon from "../../../assets / Icons/SearchIcon";
+import Folders from "./SidebarElements/Folders";
+import More from "./SidebarElements/More";
+import Recents from "./SidebarElements/Recents";
+import { getSearch } from "../../../api/NotesApi";
+
 import { NavLink, useLocation, useNavigate } from "react-router";
-import ToggleTheme from "./ToggleTheme";
-import CrossIcon from "../assets/CrossIcon";
-import { postNote } from "../api/post";
+import ToggleTheme from "../../UI/Theme/ToggleTheme";
+import CrossIcon from "../../../assets / Icons/CrossIcon";
+import { postNote } from "../../../api/NotesApi";
 
 type SidebarPropsType = {
   setSearchResults: React.Dispatch<React.SetStateAction<any[]>>;
@@ -97,6 +98,7 @@ function Sidebar({ setSearchResults, setIsSearching }: SidebarPropsType) {
               </div>
 
               <input
+                autoFocus
                 type="text"
                 placeholder="Search note"
                 value={searchInput}
@@ -109,7 +111,7 @@ function Sidebar({ setSearchResults, setIsSearching }: SidebarPropsType) {
               onClick={createNewNote}
               className="w-80/100 flex items-center justify-center gap-2.5 
              bg-secondary text-headingcolor py-2 px-4 rounded
-             transition-transform duration-100 hover:bg-blue-500
+             transition-transform duration-100 hover:bg-activecolor
              active:scale-95"
             >
               <PlusIcon className="text-menutextcolor  transition" />

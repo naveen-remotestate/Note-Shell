@@ -1,6 +1,6 @@
-import ArchivedIcon from "../assets/ArchivedIcon";
-import FavoritesIcon from "../assets/FavoritesIcon";
-import TrashIcon from "../assets/TrashIcon";
+import ArchivedIcon from "../../../../assets / Icons/ArchivedIcon";
+import FavoritesIcon from "../../../../assets / Icons/FavoritesIcon";
+import TrashIcon from "../../../../assets / Icons/TrashIcon";
 import { NavLink } from "react-router";
 function More() {
   return (
@@ -14,11 +14,13 @@ function More() {
             to={"favorites"}
             className={({ isActive }) =>
               `transition-colors duration-200 ${
-                isActive ? "bg-blue-500 text-white" : "hover:bg-blue-500/40"
+                isActive
+                  ? "bg-activecolor text-white"
+                  : "hover:bg-activecolor/40"
               }`
             }
           >
-            <div className="flex flex-row gap-3 p-3 hover:bg-blue-500">
+            <div className="flex flex-row gap-3 p-3 hover:bg-activecolor">
               <FavoritesIcon />
               <h3>Favorites</h3>
             </div>
@@ -27,11 +29,13 @@ function More() {
             to={"Trash"}
             className={({ isActive }) =>
               `transition-colors duration-200 ${
-                isActive ? "bg-blue-500 text-white" : "hover:bg-blue-500/40"
+                isActive
+                  ? "bg-activecolor text-white"
+                  : "hover:bg-activecolor/40"
               }`
             }
           >
-            <div className="flex flex-row gap-3 p-3 hover:bg-blue-500">
+            <div className="flex flex-row gap-3 p-3 hover:bg-activecolor">
               <TrashIcon />
               <h3>Trash</h3>
             </div>
@@ -40,11 +44,13 @@ function More() {
             to={"archives"}
             className={({ isActive }) =>
               `transition-colors duration-200 ${
-                isActive ? "bg-blue-500 text-white" : "hover:bg-blue-500/40"
+                isActive
+                  ? "bg-activecolor text-white"
+                  : "hover:bg-activecolor/40"
               }`
             }
           >
-            <div className="flex flex-row gap-3 p-3 hover:bg-blue-500">
+            <div className="flex flex-row gap-3 p-3 hover:bg-activecolor">
               <ArchivedIcon />
               <h3>Archived Notes</h3>
             </div>

@@ -1,11 +1,11 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { NavLink, useParams } from "react-router";
-import { getFolderNotesById } from "../api/get";
+// import { getFolderNotesById } from "../api/get";
+import { getFolderNotesById } from "../../../api/NotesApi";
 function Notes() {
   const paramData = useParams(); //getting ID and Name of folder through params
   const folderHeading = paramData?.name;
   const folderId = paramData.id ? paramData.id : null;
-  const { noteid } = useParams();
 
   type allNotesType = {
     id: string;
@@ -16,16 +16,63 @@ function Notes() {
   };
 
   const [allNotes, setAllNotes] = useState<allNotesType[]>([]);
+  const [page, setPage] = useState(1);
+  const [loading, setLoading] = useState(false);
+
+  const observerRef = useRef<HTMLDivElement | null>(null);
+
+  async function getAllNotes(pageNumber: number) {
+    if (!folderId || loading) return;
+
+    setLoading(true);
+
+    const data = await getFolderNotesById(folderId, pageNumber, 15);
+
+    if (!data || data.length === 0) {
+      setLoading(false);
+      return;
+    }
+
+    setAllNotes((prev) => {
+      const ids = new Set(prev.map((n: allNotesType) => n.id));
+      const filtered = data.filter((n: allNotesType) => !ids.has(n.id));
+      return [...prev, ...filtered];
+    });
+    setLoading(false);
+
+    if (data.length < 15) return;
+  }
 
   useEffect(() => {
-    if (folderId) {
-      async function getdata() {
-        const data = await getFolderNotesById(folderId);
-        setAllNotes(data);
-      }
-      getdata();
+    setAllNotes([]);
+    setPage(1);
+  }, [folderId]);
+
+  useEffect(() => {
+    getAllNotes(page);
+  }, [page, folderId]);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const entry = entries[0];
+
+        if (entry.isIntersecting && !loading) {
+          setPage((prev) => prev + 1);
+        }
+      },
+      {
+        root: null,
+        rootMargin: "200px",
+      },
+    );
+
+    if (observerRef.current) {
+      observer.observe(observerRef.current);
     }
-  }, [folderId, noteid]);
+
+    return () => observer.disconnect();
+  }, [loading]);
 
   function getdate(date: string): string {
     const dateObj = new Date(date);
@@ -55,12 +102,12 @@ function Notes() {
                   "content/" +
                   item.id
                 }
-                key={item.id}
+                key={`${item.id}`}
                 className={({ isActive }) =>
                   `w-full flex flex-col p-3 transition-colors duration-200 ${
                     isActive
-                      ? "bg-blue-500 text-white"
-                      : "bg-notesbg hover:bg-blue-500/40"
+                      ? "bg-activecolor text-white"
+                      : "bg-notesbg hover:bg-activecolor/40"
                   }`
                 }
               >
@@ -74,6 +121,7 @@ function Notes() {
                 </div>
               </NavLink>
             ))}
+            <div ref={observerRef} className="h-10"></div>
           </div>
         ) : (
           <h2 className="flex justify-center items-center text-menutextcolor h-full">

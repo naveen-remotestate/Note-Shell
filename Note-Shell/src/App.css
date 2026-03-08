@@ -13,6 +13,7 @@
 
   --font-KaushanScript: "Kaushan Script";
   --font-SourceSans3: "Source Sans 3";
+  --color-activecolor: var(--color-blue-500);
 }
 
 .dark {

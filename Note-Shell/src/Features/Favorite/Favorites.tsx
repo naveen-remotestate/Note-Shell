@@ -1,6 +1,6 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { NavLink, useParams } from "react-router";
-import { getFavorites } from "../api/get";
+import { getFavorites } from "../../api/NotesApi";
 
 function Favorites() {
   type allFavoritesNotesType = {
@@ -18,14 +18,60 @@ function Favorites() {
   const [allFavoritesNotes, setAllFavoritesNotes] = useState<
     allFavoritesNotesType[]
   >([]);
+  const [page, setPage] = useState(1);
+  const [loading, setLoading] = useState(false);
+
+  const observerRef = useRef<HTMLDivElement | null>(null);
+
+  async function getAllFavorites(pageNumber: number) {
+    if (loading) return;
+
+    setLoading(true);
+
+    const data = await getFavorites(pageNumber, 15);
+
+    if (!data || data.length === 0) {
+      setLoading(false);
+      return;
+    }
+
+    setAllFavoritesNotes((prev) => {
+      const ids = new Set(prev.map((n) => n.id));
+      const filtered = data.filter(
+        (n: allFavoritesNotesType) => !ids.has(n.id),
+      );
+      return [...prev, ...filtered];
+    });
+
+    setLoading(false);
+  }
 
   useEffect(() => {
-    async function getdata() {
-      const data = await getFavorites();
-      setAllFavoritesNotes(data);
+    getAllFavorites(page);
+  }, [page, paramdata.id]);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const entry = entries[0];
+
+        if (entry.isIntersecting && !loading) {
+          setPage((prev) => prev + 1);
+        }
+      },
+      {
+        root: null,
+        rootMargin: "200px",
+      },
+    );
+
+    if (observerRef.current) {
+      observer.observe(observerRef.current);
     }
-    getdata();
-  }, [paramdata.id]);
+
+    return () => observer.disconnect();
+  }, [loading]);
+
   function getdate(date: string): string {
     const dateObj = new Date(date);
     return dateObj.toLocaleDateString();
@@ -40,7 +86,7 @@ function Favorites() {
         </div>
         <div className="flex-1 overflow-y-auto no-scrollbar">
           {allFavoritesNotes.length != 0 ? (
-            <div className="flex flex-col gap-3 pl-4 pr-4">
+            <div className="flex flex-col gap-3 pl-4 pr-4 pb-4">
               {allFavoritesNotes.map((item) => (
                 <NavLink
                   to={
@@ -55,11 +101,11 @@ function Favorites() {
                   className={({ isActive }) =>
                     `w-full flex  flex-col p-3 h-fit transition-colors duration-200 justify-center ${
                       isActive
-                        ? "bg-blue-500 text-white"
-                        : "hover:bg-blue-500/40 bg-notesbg"
+                        ? "bg-activecolor text-white"
+                        : "hover:bg-activecolor/40 bg-notesbg"
                     }`
                   }
-                  // className="flex flex-col w-full h-fit bg-notesbg justify-center p-3 hover:bg-blue-500"
+                  // className="flex flex-col w-full h-fit bg-notesbg justify-center p-3 hover:bg-activecolor"
                 >
                   <h2 className=" w-full font-SourceSans3 font-semibold text-2xl text-headingcolor pl-3 pr-3 truncate">
                     {item.title}
@@ -70,6 +116,7 @@ function Favorites() {
                   </div>
                 </NavLink>
               ))}
+              <div ref={observerRef} className="h-10"></div>
             </div>
           ) : (
             <h2 className="flex justify-center items-center text-menutextcolor ">

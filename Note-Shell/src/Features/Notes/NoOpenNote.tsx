@@ -1,4 +1,4 @@
-import NoteIcon from "../assets/NoteIcon";
+import NoteIcon from "../../assets / Icons/NoteIcon";
 
 function NoOpenNote() {
   return (

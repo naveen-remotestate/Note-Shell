@@ -20,7 +20,7 @@ export default function SearchResults({ results }: propstype) {
   }
 
   return (
-    <div className="overflow-y-auto flex flex-col h-screen">
+    <div className="overflow-y-auto no-scrollbar flex flex-col h-screen">
       <h1 className="text-headingcolor font-SourceSans3 text-2xl p-4 font-semibold">
         Search Results
       </h1>
@@ -34,8 +34,8 @@ export default function SearchResults({ results }: propstype) {
               className={({ isActive }) =>
                 `w-full flex flex-col p-3 transition-colors duration-200 ${
                   isActive
-                    ? "bg-blue-500 text-white"
-                    : "hover:bg-blue-500/40 bg-notesbg"
+                    ? "bg-activecolor text-white"
+                    : "hover:bg-activecolor/40 bg-notesbg"
                 }`
               }
             >

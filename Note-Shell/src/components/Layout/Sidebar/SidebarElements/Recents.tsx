@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
-import RecentIcon from "../assets/RecentIcon";
+import RecentIcon from "../../../../assets / Icons/RecentIcon";
 import { NavLink } from "react-router";
-import { getRecent } from "../api/get";
+import { getRecent } from "../../../../api/NotesApi";
 function Recents() {
   type recentType = {
     id: string;
@@ -42,12 +42,14 @@ function Recents() {
               }
               className={({ isActive }) =>
                 `transition-colors duration-200 ${
-                  isActive ? "bg-blue-500 text-white" : "hover:bg-blue-500/40"
+                  isActive
+                    ? "bg-activecolor text-white"
+                    : "hover:bg-activecolor/40"
                 }`
               }
               key={item.id}
             >
-              <div className="flex flex-row gap-3 p-3 hover:bg-blue-500 truncate">
+              <div className="flex flex-row gap-3 p-3 hover:bg-activecolor truncate">
                 <div>
                   <RecentIcon className="text-menutextcolor transition" />
                 </div>

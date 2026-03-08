@@ -1,14 +1,14 @@
-import Sidebar from "./components/Sidebar";
-import Notes from "./components/Notes";
-import NoteContent from "./components/NoteContent";
+import Sidebar from "./components/Layout/Sidebar/Sidebar";
+import Notes from "./components/Layout/NoteList/Notes";
+import NoteContent from "./components/Layout/NoteContent/NoteContent";
 import { BrowserRouter, Route, Routes } from "react-router";
-import Favorites from "./components/Favorites";
-import Archives from "./components/Archive";
-import Trash from "./components/Trash";
-import Restoretrash from "./components/RestoreTrash";
+import Favorites from "./Features/Favorite/Favorites";
+import Archives from "./Features/Archive/Archive";
+import Trash from "./Features/Trash/Trash";
+import Restoretrash from "./Features/Trash/RestoreTrash";
 import { useState } from "react";
-import SearchResults from "./components/SearchResults";
-import WelcomeNote from "./components/WelcomeNote";
+import SearchResults from "./Features/Search/SearchResults";
+import WelcomeNote from "./components/Layout/Welcome/WelcomeNote";
 function App() {
   const [searchResults, setSearchResults] = useState<any[]>([]);
   const [isSearching, setIsSearching] = useState<boolean>(false);

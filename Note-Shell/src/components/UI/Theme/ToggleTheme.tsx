@@ -1,6 +1,6 @@
 import { useEffect } from "react";
-import MoonIcon from "../assets/MoonIcon";
-import SunIcon from "../assets/SunIcon";
+import MoonIcon from "../../../assets / Icons/MoonIcon";
+import SunIcon from "../../../assets / Icons/SunIcon";
 
 export default function ToggleTheme() {
   useEffect(() => {

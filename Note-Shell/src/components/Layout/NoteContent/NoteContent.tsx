@@ -1,6 +1,6 @@
 import { useParams } from "react-router";
-import NoOpenNote from "./NoOpenNote";
-import OpenedNote from "./OpenedNote";
+import NoOpenNote from "../../../Features/Notes/NoOpenNote";
+import OpenedNote from "../../OpenedNote";
 
 function NoteContent() {
   const paramData = useParams();

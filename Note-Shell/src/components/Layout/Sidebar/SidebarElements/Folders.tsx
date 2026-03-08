@@ -1,13 +1,14 @@
-import AddFolderIcon from "../assets/AddFolderIcon";
-import CloseFolderIcon from "../assets/CloseFolderIcon";
-import OpenFolderIcon from "../assets/OpenFolderIcon";
+import AddFolderIcon from "../../../../assets / Icons/AddFolderIcon";
+import CloseFolderIcon from "../../../../assets / Icons/CloseFolderIcon";
+import OpenFolderIcon from "../../../../assets / Icons/OpenFolderIcon";
 import { useEffect, useState } from "react";
 import { NavLink } from "react-router";
-import { getFolders } from "../api/get";
-import { patchFolderName } from "../api/patch";
-import TrashIcon from "../assets/TrashIcon";
-import { deleteFolder } from "../api/delete";
-import { postFolder } from "../api/post";
+import { getFolders } from "../../../../api/FolderApi";
+import { patchFolderName } from "../../../../api/FolderApi";
+import TrashIcon from "../../../../assets / Icons/TrashIcon";
+import { deleteFolder } from "../../../../api/FolderApi";
+import { postFolder } from "../../../../api/FolderApi";
+import { confirmDeleteDialog } from "../../../../assets / Icons/ConfirmDeleteDialog";
 
 function Folders() {
   type folderType = {
@@ -17,6 +18,11 @@ function Folders() {
   const [folders, setFolders] = useState<folderType[]>([]);
   const [newFoldername, setNewFolderName] = useState<string>("");
   const [folderIdtoEdit, setFolderIdToEdit] = useState<string | null>("");
+
+  async function getdata() {
+    const data = await getFolders();
+    setFolders(data);
+  }
   // function for updating foldername
   async function updateFolderName(id: string) {
     if (newFoldername.trim() === "") {
@@ -37,10 +43,6 @@ function Folders() {
   }
 
   useEffect(() => {
-    async function getdata() {
-      const data = await getFolders();
-      setFolders(data);
-    }
     getdata();
   }, []);
   //add new folder
@@ -49,8 +51,9 @@ function Folders() {
     if (!name || !name.trim()) return;
 
     try {
-      const newFolder = await postFolder(name);
-      setFolders((prev) => [...prev, newFolder]);
+      await postFolder(name);
+
+      getdata();
     } catch (error) {
       console.log(error);
     }
@@ -65,7 +68,7 @@ function Folders() {
             <AddFolderIcon className="text-headingcolor hover:text-blue-500 transition" />
           </div>
         </div>
-        <div className="flex flex-col group flex-1 overflow-y-auto no-scrollbar">
+        <div className="flex flex-col flex-1 overflow-y-auto no-scrollbar">
           {folders.map((item) => (
             <NavLink
               to={`/folders/${item.id}/${item.name}`}
@@ -76,8 +79,10 @@ function Folders() {
                 setNewFolderName(item.name);
               }}
               className={({ isActive }) =>
-                `w-full flex flex-row gap-3 p-3 group items-center transition-colors duration-200 ${
-                  isActive ? "bg-blue-500 text-white" : "hover:bg-blue-500/40"
+                `w-full flex flex-row gap-3 p-3  items-center transition-colors duration-200 ${
+                  isActive
+                    ? "bg-activecolor text-white"
+                    : "hover:bg-activecolor/40 group"
                 }`
               }
             >
@@ -113,14 +118,13 @@ function Folders() {
                         className="flex opacity-0 group-hover:opacity-100 shrink-0"
                         onClick={async (e) => {
                           e.preventDefault();
-                          const confirmDelete = window.confirm(
+                          const confirmDelete = await confirmDeleteDialog(
                             "Are you sure you want to delete this folder?",
                           );
                           if (confirmDelete) {
                             await deleteFolder(item.id);
-                            setFolders((prev) =>
-                              prev.filter((f) => f.id !== item.id),
-                            );
+
+                            getdata();
                           }
                         }}
                       >

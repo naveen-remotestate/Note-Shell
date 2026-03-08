@@ -1,20 +1,22 @@
 import { useEffect, useRef, useState } from "react";
-import DateIcon from "../assets/DateIcon";
-import FolderIcon from "../assets/FolderIcon";
-import ThreeDotIcon from "../assets/ThreeDotIcon";
-import { getFolders, getNoteById } from "../api/get";
-import FavoritesIcon from "../assets/FavoritesIcon";
-import ArchivedIcon from "../assets/ArchivedIcon";
-import TrashIcon from "../assets/TrashIcon";
+import DateIcon from "../assets / Icons/DateIcon";
+import FolderIcon from "../assets / Icons/FolderIcon";
+import ThreeDotIcon from "../assets / Icons/ThreeDotIcon";
+import { getFolders } from "../api/FolderApi";
+import FavoritesIcon from "../assets / Icons/FavoritesIcon";
+import ArchivedIcon from "../assets / Icons/ArchivedIcon";
+import TrashIcon from "../assets / Icons/TrashIcon";
 import {
   patchMarkArchive,
   patchMarkFavorite,
   patchNoteContent,
   patchNoteName,
-} from "../api/patch";
+} from "../api/NotesApi";
 import { useNavigate, useParams } from "react-router";
-import { deleteNote } from "../api/delete";
-import DropdownArrowIcon from "../assets/DropdownArrowIcon";
+import { deleteNote } from "../api/NotesApi";
+import DropdownArrowIcon from "../assets / Icons/DropdownArrowIcon";
+import { getNoteById, patchNoteFolder } from "../api/NotesApi";
+import { confirmDeleteDialog } from "../assets / Icons/ConfirmDeleteDialog";
 
 type propType = {
   id: string;
@@ -146,7 +148,28 @@ function OpenedNote({ id, foldername }: propType) {
     }
     getdata();
   }, []);
+  //dropdown of movefolder
+  const dropdownRef = useRef<HTMLDivElement | null>(null);
+  useEffect(() => {
+    if (isfolderDropdown && dropdownRef.current) {
+      dropdownRef.current.focus();
+    }
+  }, [isfolderDropdown]);
 
+  //move folder
+  async function updateFolder(folderId: string, folderName: string) {
+    if (!note) return;
+
+    try {
+      await patchNoteFolder(note.id, folderId);
+
+      setIsFolderDropDown(false);
+
+      navigate(`/folders/${folderId}/${folderName}/content/${note.id}`);
+    } catch (error) {
+      console.error(error);
+    }
+  }
   return (
     <>
       <div className="flex flex-col h-screen w-full p-12">
@@ -200,7 +223,7 @@ function OpenedNote({ id, foldername }: propType) {
                       : markFavorite(id, true)
                   }
                 >
-                  <div className="p-4 flex flex-row gap-3 hover:bg-blue-500 cursor-pointer items-center group">
+                  <div className="p-4 flex flex-row gap-3 hover:bg-activecolor cursor-pointer items-center group">
                     <FavoritesIcon
                       active={note?.isFavorite}
                       className="text-menutextcolor group-hover:text-white transition"
@@ -220,7 +243,7 @@ function OpenedNote({ id, foldername }: propType) {
                       : markArchive(id, true)
                   }
                 >
-                  <div className="p-4 flex flex-row gap-3 hover:bg-blue-500 cursor-pointer">
+                  <div className="p-4 flex flex-row gap-3 hover:bg-activecolor cursor-pointer">
                     <ArchivedIcon />
                     <h1>{note?.isArchived ? "Unarchive" : "Archive"}</h1>
                   </div>
@@ -232,8 +255,8 @@ function OpenedNote({ id, foldername }: propType) {
                   onClick={async (e) => {
                     e.preventDefault();
 
-                    const confirmDelete = window.confirm(
-                      "Are you sure you want to delete this note?",
+                    const confirmDelete = await confirmDeleteDialog(
+                      "Are you sure you want to delete this Note?",
                     );
 
                     if (!confirmDelete) return;
@@ -250,7 +273,7 @@ function OpenedNote({ id, foldername }: propType) {
                     }
                   }}
                 >
-                  <div className="p-4 flex flex-row gap-3 hover:bg-blue-500 cursor-pointer">
+                  <div className="p-4 flex flex-row gap-3 hover:bg-activecolor cursor-pointer">
                     <TrashIcon />
                     <h3>Delete</h3>
                   </div>
@@ -278,22 +301,29 @@ function OpenedNote({ id, foldername }: propType) {
             <div className="text-headingcolor truncate w-3xs font-semibold">
               <button
                 className="flex flex-row"
-                onClick={() => setIsFolderDropDown((prev) => !prev)}
+                onClick={() => setIsFolderDropDown(true)}
               >
                 {foldername}
                 <DropdownArrowIcon />
               </button>
 
               <div
-                className={`absolute bg-secondary overflow-hidden truncate mt-2 z-10 ${
+                ref={dropdownRef}
+                tabIndex={0}
+                onBlur={() => setIsFolderDropDown(false)}
+                className={`absolute bg-secondary overflow-scroll no-scrollbar truncate mt-2 z-10 ${
                   isfolderDropdown ? "block" : "hidden"
-                } rounded-2xl w-55`}
+                } rounded-b-sm h-75 w-55`}
               >
-                <ul className="p-2 text-sm text-body font-medium">
+                <ul className=" text-sm text-body font-medium">
                   {folders.map((items) => (
-                    <li key={items.id} className="hover:bg-blue-400">
-                      {items.name}
-                    </li>
+                    <div
+                      key={items.id}
+                      className="hover:bg-blue-400 p-1"
+                      onClick={() => updateFolder(items.id, items.name)}
+                    >
+                      <li className="pl-2">{items.name}</li>
+                    </div>
                   ))}
                 </ul>
               </div>

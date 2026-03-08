@@ -1,7 +1,7 @@
 import { useNavigate, useParams } from "react-router";
-import RestoreIcon from "../assets/RestoreIcon";
+import RestoreIcon from "../../assets / Icons/RestoreIcon";
 import { useEffect, useState } from "react";
-import { postRestoreNoteById } from "../api/post";
+import { postRestoreNoteById } from "../../api/NotesApi";
 
 export default function Restoretrash() {
   const paramdata = useParams();
@@ -43,7 +43,9 @@ export default function Restoretrash() {
           <button
             onClick={() => restoreNote(noteid)}
             className={`text-white rounded font-medium transition-transform duration-100 active:scale-95 text-sm px-4 py-2.5 ${
-              isRestored ? "bg-blue-500 " : "bg-blue-500 hover:bg-blue-500/40"
+              isRestored
+                ? "bg-activecolor "
+                : "bg-activecolor hover:bg-activecolor/40"
             }`}
             disabled={isRestored}
           >
