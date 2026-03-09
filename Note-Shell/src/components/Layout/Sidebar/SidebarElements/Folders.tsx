@@ -18,6 +18,7 @@ function Folders() {
   const [folders, setFolders] = useState<folderType[]>([]);
   const [newFoldername, setNewFolderName] = useState<string>("");
   const [folderIdtoEdit, setFolderIdToEdit] = useState<string | null>("");
+  const [creatingFolder, setCreatingFolder] = useState(false);
 
   async function getdata() {
     const data = await getFolders();
@@ -46,18 +47,26 @@ function Folders() {
     getdata();
   }, []);
   //add new folder
-  const AddFolder = async () => {
-    const name = prompt("Enter folder name");
-    if (!name || !name.trim()) return;
+  const AddFolder = () => {
+    setCreatingFolder(true);
+    setNewFolderName("");
+  };
+
+  async function createFolder() {
+    if (!newFoldername.trim()) {
+      setCreatingFolder(false);
+      return;
+    }
 
     try {
-      await postFolder(name);
-
-      getdata();
+      await postFolder(newFoldername);
+      await getdata();
     } catch (error) {
       console.log(error);
     }
-  };
+
+    setCreatingFolder(false);
+  }
 
   return (
     <>
@@ -69,6 +78,24 @@ function Folders() {
           </div>
         </div>
         <div className="flex flex-col flex-1 overflow-y-auto no-scrollbar">
+          {creatingFolder && (
+            <div className="flex items-center gap-3 p-3">
+              <OpenFolderIcon className="text-headingcolor" />
+
+              <input
+                autoFocus
+                value={newFoldername}
+                onChange={(e) => setNewFolderName(e.target.value)}
+                onBlur={createFolder}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") createFolder();
+                  if (e.key === "Escape") setCreatingFolder(false);
+                }}
+                className="bg-transparent border-b border-headingcolor outline-none w-full"
+                placeholder="New folder"
+              />
+            </div>
+          )}
           {folders.map((item) => (
             <NavLink
               to={`/folders/${item.id}/${item.name}`}

@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { NavLink, useParams } from "react-router";
 import { getFavorites } from "../../api/NotesApi";
+import NotesLoader from "../../components/UI/Theme/NotesLoader";
 
 function Favorites() {
   type allFavoritesNotesType = {
@@ -22,6 +23,7 @@ function Favorites() {
   const [loading, setLoading] = useState(false);
 
   const observerRef = useRef<HTMLDivElement | null>(null);
+  const observerInstance = useRef<IntersectionObserver | null>(null);
 
   async function getAllFavorites(pageNumber: number) {
     if (loading) return;
@@ -32,6 +34,8 @@ function Favorites() {
 
     if (!data || data.length === 0) {
       setLoading(false);
+      observerInstance.current?.disconnect();
+
       return;
     }
 
@@ -44,14 +48,20 @@ function Favorites() {
     });
 
     setLoading(false);
+    if (data.length < 15) observerInstance.current?.disconnect();
   }
+
+  useEffect(() => {
+    setAllFavoritesNotes([]);
+    setPage(1);
+  }, [paramdata.id]);
 
   useEffect(() => {
     getAllFavorites(page);
   }, [page, paramdata.id]);
 
   useEffect(() => {
-    const observer = new IntersectionObserver(
+    observerInstance.current = new IntersectionObserver(
       (entries) => {
         const entry = entries[0];
 
@@ -66,10 +76,10 @@ function Favorites() {
     );
 
     if (observerRef.current) {
-      observer.observe(observerRef.current);
+      observerInstance.current.observe(observerRef.current);
     }
 
-    return () => observer.disconnect();
+    return () => observerInstance.current?.disconnect();
   }, [loading]);
 
   function getdate(date: string): string {
@@ -84,46 +94,56 @@ function Favorites() {
             Favorites
           </h1>
         </div>
-        <div className="flex-1 overflow-y-auto no-scrollbar">
-          {allFavoritesNotes.length != 0 ? (
-            <div className="flex flex-col gap-3 pl-4 pr-4 pb-4">
-              {allFavoritesNotes.map((item) => (
-                <NavLink
-                  to={
-                    "/favorites/" +
-                    item.folderId +
-                    "/" +
-                    item.folder.name +
-                    "/" +
-                    item.id
-                  }
-                  key={item.id}
-                  className={({ isActive }) =>
-                    `w-full flex  flex-col p-3 h-fit transition-colors duration-200 justify-center ${
-                      isActive
-                        ? "bg-activecolor text-white"
-                        : "hover:bg-activecolor/40 bg-notesbg"
-                    }`
-                  }
-                  // className="flex flex-col w-full h-fit bg-notesbg justify-center p-3 hover:bg-activecolor"
-                >
-                  <h2 className=" w-full font-SourceSans3 font-semibold text-2xl text-headingcolor pl-3 pr-3 truncate">
-                    {item.title}
-                  </h2>
-                  <div className="flex flex-row overflow-hidden font-SourceSans3 text-menutextcolor p-3 gap-4">
-                    <h3>{getdate(item.updatedAt)}</h3>
-                    <h3>{item.preview}</h3>
+        {/* Scrollable Notes */}
+        {loading && allFavoritesNotes.length === 0 ? (
+          <NotesLoader />
+        ) : (
+          <div className="flex-1 overflow-y-auto no-scrollbar">
+            {allFavoritesNotes.length != 0 ? (
+              <div className="flex flex-col gap-3 pl-4 pr-4 pb-4">
+                {allFavoritesNotes.map((item) => (
+                  <NavLink
+                    to={
+                      "/favorites/" +
+                      item.folderId +
+                      "/" +
+                      item.folder.name +
+                      "/" +
+                      item.id
+                    }
+                    key={item.id}
+                    className={({ isActive }) =>
+                      `w-full flex  flex-col p-3 h-fit transition-colors duration-200 justify-center ${
+                        isActive
+                          ? "bg-activecolor text-white"
+                          : "hover:bg-activecolor/40 bg-notesbg"
+                      }`
+                    }
+                    // className="flex flex-col w-full h-fit bg-notesbg justify-center p-3 hover:bg-activecolor"
+                  >
+                    <h2 className=" w-full font-SourceSans3 font-semibold text-2xl text-headingcolor pl-3 pr-3 truncate">
+                      {item.title}
+                    </h2>
+                    <div className="flex flex-row overflow-hidden font-SourceSans3 text-menutextcolor p-3 gap-4">
+                      <h3>{getdate(item.updatedAt)}</h3>
+                      <h3>{item.preview}</h3>
+                    </div>
+                  </NavLink>
+                ))}
+                <div ref={observerRef} className="h-10"></div>
+                {loading && allFavoritesNotes.length > 0 && (
+                  <div className="flex justify-center p-4 text-menutextcolor">
+                    Loading more notes...
                   </div>
-                </NavLink>
-              ))}
-              <div ref={observerRef} className="h-10"></div>
-            </div>
-          ) : (
-            <h2 className="flex justify-center items-center text-menutextcolor ">
-              No Favorites
-            </h2>
-          )}
-        </div>
+                )}
+              </div>
+            ) : (
+              <h2 className="flex justify-center items-center text-menutextcolor ">
+                No Favorites
+              </h2>
+            )}
+          </div>
+        )}
       </div>
     </>
   );
