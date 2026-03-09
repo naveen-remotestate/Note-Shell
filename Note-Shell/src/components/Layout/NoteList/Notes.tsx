@@ -19,21 +19,20 @@ function Notes() {
   const [allNotes, setAllNotes] = useState<allNotesType[]>([]);
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(false);
+  const [Pagination, setStopPagination] = useState(false);
 
   const observerRef = useRef<HTMLDivElement | null>(null);
   const observerInstance = useRef<IntersectionObserver | null>(null);
-  const stopPagination = useRef(false);
 
   async function getAllNotes(pageNumber: number) {
-    if (!folderId || loading) return;
+    if (!folderId || loading || Pagination) return;
     console.log("pagNumber", pageNumber);
-    if (stopPagination.current && pageNumber !== 1) return;
     setLoading(true);
 
     const data = await getFolderNotesById(folderId, pageNumber, 15);
-
-    if (!data || data.length === 0) {
-      stopPagination.current = true;
+    if (!data || data.notes.length === 0) {
+      // stopPagination.current = true;
+      setStopPagination(true);
       setLoading(false);
       observerInstance.current?.disconnect();
       return;
@@ -41,12 +40,13 @@ function Notes() {
 
     setAllNotes((prev) => {
       const ids = new Set(prev.map((n: allNotesType) => n.id));
-      const filtered = data.filter((n: allNotesType) => !ids.has(n.id));
+      const filtered = data.notes.filter((n: allNotesType) => !ids.has(n.id));
       return [...prev, ...filtered];
     });
 
-    if (data.length < 15) {
-      stopPagination.current = true;
+    if (data.notes.length < 15) {
+      // stopPagination.current = true;
+      setStopPagination(true);
       observerInstance.current?.disconnect();
     }
     setLoading(false);
@@ -56,7 +56,8 @@ function Notes() {
     setAllNotes([]);
     setPage(1);
     setLoading(false);
-    stopPagination.current = false;
+    // stopPagination.current = false;
+    setStopPagination(false);
     observerInstance.current?.disconnect();
   }, [folderId]);
 

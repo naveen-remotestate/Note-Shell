@@ -1,5 +1,18 @@
 import CallApi from "./CallApi";
 
+interface Note {
+  id: string;
+  folderId: string;
+  title: string;
+  updatedAt: string;
+  preview: string;
+}
+
+interface NotesResponse {
+  notes: Note[];
+  total: number;
+}
+
 //geting all notes of a folder
 export async function getFolderNotesById(
   folderId: string | null,
@@ -7,11 +20,11 @@ export async function getFolderNotesById(
   limit: number = 15,
 ) {
   try {
-    const response = await CallApi.get(
+    const response = await CallApi.get<NotesResponse>(
       `/notes?archived=false&deleted=false&folderId=${folderId}&page=${page}&limit=${limit}`,
     );
 
-    return response.data?.notes;
+    return response.data;
   } catch (error) {
     console.log(error);
   }
