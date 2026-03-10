@@ -1,18 +1,9 @@
+import type {
+  noteContentType,
+  NotesType,
+  recentResponeType,
+} from "../components/Types/NotesType";
 import CallApi from "./CallApi";
-
-interface Note {
-  id: string;
-  folderId: string;
-  title: string;
-  updatedAt: string;
-  preview: string;
-}
-
-interface NotesResponse {
-  notes: Note[];
-  total: number;
-}
-
 //geting all notes of a folder
 export async function getFolderNotesById(
   folderId: string | null,
@@ -20,7 +11,7 @@ export async function getFolderNotesById(
   limit: number = 15,
 ) {
   try {
-    const response = await CallApi.get<NotesResponse>(
+    const response = await CallApi.get<NotesType>(
       `/notes?archived=false&deleted=false&folderId=${folderId}&page=${page}&limit=${limit}`,
     );
 
@@ -33,10 +24,67 @@ export async function getFolderNotesById(
 //getting all three recent notes
 export async function getRecent() {
   try {
-    const response = await CallApi.get("/notes/recent");
+    const response = await CallApi.get<recentResponeType>("/notes/recent");
     return response.data?.recentNotes;
   } catch (error) {
     console.error(error);
+  }
+}
+
+//getting the full note- content and details
+export async function getNoteById(id: string | null) {
+  try {
+    const response = await CallApi.get<noteContentType>(`/notes/${id}`);
+    // console.log(response.data.note);
+    return response.data?.note;
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+//Search on Notes
+export async function getSearch(searchInput: string) {
+  try {
+    const response = await CallApi.get<NotesType>(
+      `/notes?archived=false&deleted=false&page=1&limit=all&search=${searchInput}`,
+    );
+    return response.data?.notes;
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+//geting deleted notes
+export async function getTrash(page: number, limit: number = 15) {
+  const response = await CallApi.get<NotesType>(
+    `/notes?deleted=true&page=${page}&limit=${limit}`,
+  );
+
+  return response.data?.notes;
+}
+
+//getting Archive Notes
+export async function getArchives(page: number, limit: number = 15) {
+  const response = await CallApi.get<NotesType>(
+    `/notes?archived=true&page=${page}&limit=${limit}`,
+  );
+
+  return response.data?.notes;
+}
+//getting all the favorite notes
+export async function getFavorites(page: number, limit: number = 15) {
+  const response = await CallApi.get<NotesType>(
+    `/notes?favorite=true&page=${page}&limit=${limit}`,
+  );
+
+  return response.data?.notes;
+}
+//Delete note
+export async function deleteNote(noteid: string) {
+  try {
+    await CallApi.delete(`/notes/${noteid}`);
+  } catch (error) {
+    console.log(error);
   }
 }
 
@@ -51,62 +99,6 @@ export async function patchNoteFolder(id: string, newfolder: string) {
   }
 }
 
-//getting the full note- content and details
-export async function getNoteById(id: string | null) {
-  try {
-    const response = await CallApi.get(`/notes/${id}`);
-    // console.log(response.data.note);
-    return response.data?.note;
-  } catch (error) {
-    console.log(error);
-  }
-}
-
-//Search on Notes
-export async function getSearch(searchInput: string) {
-  try {
-    const response = await CallApi.get(
-      `/notes?archived=false&deleted=false&search=${searchInput}`,
-    );
-    return response.data?.notes;
-  } catch (error) {
-    console.log(error);
-  }
-}
-
-//geting deleted notes
-export async function getTrash(page: number, limit: number = 15) {
-  const response = await CallApi.get(
-    `/notes?deleted=true&page=${page}&limit=${limit}`,
-  );
-
-  return response.data?.notes;
-}
-
-//getting Archive Notes
-export async function getArchives(page: number, limit: number = 15) {
-  const response = await CallApi.get(
-    `/notes?archived=true&page=${page}&limit=${limit}`,
-  );
-
-  return response.data?.notes;
-}
-//getting all the favorite notes
-export async function getFavorites(page: number, limit: number = 15) {
-  const response = await CallApi.get(
-    `/notes?favorite=true&page=${page}&limit=${limit}`,
-  );
-
-  return response.data?.notes;
-}
-//Delete note
-export async function deleteNote(noteid: string) {
-  try {
-    await CallApi.delete(`/notes/${noteid}`);
-  } catch (error) {
-    console.log(error);
-  }
-}
 //mark Fav or UnFav
 export async function patchMarkFavorite(id: string, value: boolean) {
   return CallApi.patch(`/notes/${id}`, {

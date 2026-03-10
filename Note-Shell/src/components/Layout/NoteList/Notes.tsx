@@ -26,7 +26,7 @@ function Notes() {
 
   async function getAllNotes(pageNumber: number) {
     if (!folderId || loading || Pagination) return;
-    console.log("pagNumber", pageNumber);
+    // console.log("pagNumber", pageNumber);
     setLoading(true);
 
     const data = await getFolderNotesById(folderId, pageNumber, 15);
@@ -37,12 +37,15 @@ function Notes() {
       observerInstance.current?.disconnect();
       return;
     }
-
-    setAllNotes((prev) => {
-      const ids = new Set(prev.map((n: allNotesType) => n.id));
-      const filtered = data.notes.filter((n: allNotesType) => !ids.has(n.id));
-      return [...prev, ...filtered];
-    });
+    if (page > 1) {
+      setAllNotes((prev) => {
+        const ids = new Set(prev.map((n: allNotesType) => n.id));
+        const filtered = data.notes.filter((n: allNotesType) => !ids.has(n.id));
+        return [...prev, ...filtered];
+      });
+    } else {
+      setAllNotes(data.notes);
+    }
 
     if (data.notes.length < 15) {
       // stopPagination.current = true;
@@ -51,6 +54,7 @@ function Notes() {
     }
     setLoading(false);
   }
+  const [isResetDone, setIsResetDone] = useState(false);
 
   useEffect(() => {
     setAllNotes([]);
@@ -59,11 +63,21 @@ function Notes() {
     // stopPagination.current = false;
     setStopPagination(false);
     observerInstance.current?.disconnect();
+    setIsResetDone(true);
   }, [folderId]);
 
   useEffect(() => {
-    getAllNotes(page);
-  }, [page, folderId]);
+    if (isResetDone) {
+      getAllNotes(page);
+      setIsResetDone(false);
+    }
+  }, [isResetDone]);
+
+  useEffect(() => {
+    if (!isResetDone) {
+      getAllNotes(page);
+    }
+  }, [page]);
 
   useEffect(() => {
     observerInstance.current = new IntersectionObserver(

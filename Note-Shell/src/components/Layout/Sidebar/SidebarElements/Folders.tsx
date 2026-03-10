@@ -22,7 +22,7 @@ function Folders() {
 
   async function getdata() {
     const data = await getFolders();
-    setFolders(data);
+    if (data) setFolders(data);
   }
   // function for updating foldername
   async function updateFolderName(id: string) {

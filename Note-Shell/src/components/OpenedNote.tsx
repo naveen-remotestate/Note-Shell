@@ -117,13 +117,14 @@ function OpenedNote({ id, foldername }: propType) {
     if (id) {
       async function getdata() {
         const data = await getNoteById(id);
+        if (data) {
+          setNote(data);
+          setNoteContent(data.content);
 
-        setNote(data);
-        setNoteContent(data.content);
-
-        if (data.title === "Untitled Note" || data.title === "") {
-          setIsEditingTitle(true);
-          setNewTitle(data.title);
+          if (data.title === "Untitled Note" || data.title === "") {
+            setIsEditingTitle(true);
+            setNewTitle(data.title);
+          }
         }
       }
 
@@ -144,7 +145,7 @@ function OpenedNote({ id, foldername }: propType) {
   useEffect(() => {
     async function getdata() {
       const data = await getFolders();
-      setFolders(data);
+      if (data) setFolders(data);
     }
     getdata();
   }, []);

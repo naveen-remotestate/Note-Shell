@@ -21,21 +21,22 @@ function Favorites() {
   >([]);
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(false);
+  const [stopPagination, setStopPagination] = useState(false);
 
   const observerRef = useRef<HTMLDivElement | null>(null);
   const observerInstance = useRef<IntersectionObserver | null>(null);
 
   async function getAllFavorites(pageNumber: number) {
-    if (loading) return;
+    if (loading || stopPagination) return;
 
     setLoading(true);
 
     const data = await getFavorites(pageNumber, 15);
 
     if (!data || data.length === 0) {
+      setStopPagination(true);
       setLoading(false);
       observerInstance.current?.disconnect();
-
       return;
     }
 
@@ -47,13 +48,19 @@ function Favorites() {
       return [...prev, ...filtered];
     });
 
+    if (data.length < 15) {
+      setStopPagination(true);
+      observerInstance.current?.disconnect();
+    }
     setLoading(false);
-    if (data.length < 15) observerInstance.current?.disconnect();
   }
 
   useEffect(() => {
     setAllFavoritesNotes([]);
     setPage(1);
+    setLoading(false);
+    setStopPagination(false);
+    observerInstance.current?.disconnect();
   }, [paramdata.id]);
 
   useEffect(() => {

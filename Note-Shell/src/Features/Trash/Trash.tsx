@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { NavLink } from "react-router";
 import { getTrash } from "../../api/NotesApi";
+import NotesLoader from "../../components/UI/Theme/NotesLoader";
 function Trash() {
   type allTrashNotesType = {
     id: string;
@@ -16,17 +17,20 @@ function Trash() {
   const [allTrashNotes, setAllTrashNotes] = useState<allTrashNotesType[]>([]);
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(false);
+  const [stopPagination, setStopPagination] = useState(false);
 
   const observerRef = useRef<HTMLDivElement | null>(null);
+  const observerInstance = useRef<IntersectionObserver | null>(null);
 
   async function getAllTrash(pageNumber: number) {
-    if (loading) return;
+    if (loading || stopPagination) return;
 
     setLoading(true);
 
     const data = await getTrash(pageNumber, 15);
 
     if (!data || data.length === 0) {
+      setStopPagination(true);
       setLoading(false);
       return;
     }
@@ -36,9 +40,21 @@ function Trash() {
       const filtered = data.filter((n: allTrashNotesType) => !ids.has(n.id));
       return [...prev, ...filtered];
     });
+    if (data.length < 15) {
+      setStopPagination(true);
+      observerInstance.current?.disconnect();
+    }
 
     setLoading(false);
   }
+
+  // useEffect(() => {
+  //   setAllTrashNotes([]);
+  //   setPage(1);
+  //   setLoading(false);
+  //   setStopPagination(false);
+  //   observerInstance.current?.disconnect();
+  // }, [paramdata.id]);
 
   useEffect(() => {
     getAllTrash(page);
@@ -78,41 +94,56 @@ function Trash() {
             Trash
           </h1>
         </div>
-        <div className="flex-1 overflow-y-auto no-scrollbar">
-          {allTrashNotes.length != 0 ? (
-            <div className="flex flex-col gap-3 pl-4 pr-4 pb-4">
-              {allTrashNotes.map((item) => (
-                <NavLink
-                  to={
-                    "/trash/" + item.folderId + "/" + item.title + "/" + item.id
-                  }
-                  key={item.id}
-                  // className="flex flex-col w-full h-fit bg-notesbg justify-center p-3 hover:bg-activecolor"
-                  className={({ isActive }) =>
-                    `w-full flex flex-col p-3 h-fit transition-colors duration-200 justify-center ${
-                      isActive
-                        ? "bg-activecolor text-white"
-                        : "hover:bg-activecolor/40 bg-notesbg"
-                    }`
-                  }
-                >
-                  <h2 className=" w-full font-SourceSans3 font-semibold text-2xl text-headingcolor pl-3 pr-3 truncate">
-                    {item.title}
-                  </h2>
-                  <div className="flex flex-row overflow-hidden font-SourceSans3 text-menutextcolor p-3 gap-4">
-                    <h3>{getdate(item.updatedAt)}</h3>
-                    <h3>{item.preview}</h3>
+        {/* Scrollable Notes */}
+        {loading && allTrashNotes.length === 0 ? (
+          <NotesLoader />
+        ) : (
+          <div className="flex-1 overflow-y-auto no-scrollbar">
+            {allTrashNotes.length != 0 ? (
+              <div className="flex flex-col gap-3 pl-4 pr-4 pb-4">
+                {allTrashNotes.map((item) => (
+                  <NavLink
+                    to={
+                      "/trash/" +
+                      item.folderId +
+                      "/" +
+                      item.title +
+                      "/" +
+                      item.id
+                    }
+                    key={item.id}
+                    // className="flex flex-col w-full h-fit bg-notesbg justify-center p-3 hover:bg-activecolor"
+                    className={({ isActive }) =>
+                      `w-full flex flex-col p-3 h-fit transition-colors duration-200 justify-center ${
+                        isActive
+                          ? "bg-activecolor text-white"
+                          : "hover:bg-activecolor/40 bg-notesbg"
+                      }`
+                    }
+                  >
+                    <h2 className=" w-full font-SourceSans3 font-semibold text-2xl text-headingcolor pl-3 pr-3 truncate">
+                      {item.title}
+                    </h2>
+                    <div className="flex flex-row overflow-hidden font-SourceSans3 text-menutextcolor p-3 gap-4">
+                      <h3>{getdate(item.updatedAt)}</h3>
+                      <h3>{item.preview}</h3>
+                    </div>
+                  </NavLink>
+                ))}
+                <div ref={observerRef} className="h-10"></div>
+                {loading && allTrashNotes.length > 0 && (
+                  <div className="flex justify-center p-4 text-menutextcolor">
+                    Loading more notes...
                   </div>
-                </NavLink>
-              ))}
-              <div ref={observerRef} className="h-10"></div>
-            </div>
-          ) : (
-            <h2 className="flex justify-center items-center text-menutextcolor ">
-              The Trash is Empty
-            </h2>
-          )}
-        </div>
+                )}
+              </div>
+            ) : (
+              <h2 className="flex justify-center items-center text-menutextcolor ">
+                The Trash is Empty
+              </h2>
+            )}
+          </div>
+        )}
       </div>
     </>
   );

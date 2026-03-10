@@ -1,9 +1,10 @@
+import type { folderResponseType } from "../components/Types/FolderType";
 import CallApi from "./CallApi";
 
 // Geting all the folders
 export async function getFolders() {
   try {
-    const response = await CallApi.get("/folders");
+    const response = await CallApi.get<folderResponseType>("/folders");
     return response.data?.folders;
   } catch (error) {
     console.log(error);
@@ -12,10 +13,10 @@ export async function getFolders() {
 
 // creating a new folder
 export async function postFolder(folderName: string) {
-  const response = await CallApi.post(`/folders`, {
+  await CallApi.post(`/folders`, {
     name: folderName,
   });
-  return response.data;
+  // return response.data;
 }
 
 // edit folder name
