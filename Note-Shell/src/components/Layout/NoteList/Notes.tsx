@@ -23,16 +23,26 @@ function Notes() {
 
   const observerRef = useRef<HTMLDivElement | null>(null);
   const observerInstance = useRef<IntersectionObserver | null>(null);
+  const abortControllerRef = useRef<AbortController | null>(null);
 
   async function getAllNotes(pageNumber: number) {
-    if (!folderId || loading || Pagination) return;
+    if (!folderId || Pagination) return;
     // console.log("pagNumber", pageNumber);
+    abortControllerRef.current?.abort();
+
+    const controller = new AbortController();
+    abortControllerRef.current = controller;
+
     setLoading(true);
 
-    const data = await getFolderNotesById(folderId, pageNumber, 15);
-    if (!data || data.notes.length === 0) {
+    const data = await getFolderNotesById(folderId, pageNumber, 15, {
+      signal: controller.signal,
+    });
+    console.log(data);
+    if (data?.notes.length === 0) {
       // stopPagination.current = true;
       setStopPagination(true);
+      console.log("JIJIJI");
       setLoading(false);
       observerInstance.current?.disconnect();
       return;
@@ -40,15 +50,17 @@ function Notes() {
     if (page > 1) {
       setAllNotes((prev) => {
         const ids = new Set(prev.map((n: allNotesType) => n.id));
-        const filtered = data.notes.filter((n: allNotesType) => !ids.has(n.id));
+        const filtered =
+          data?.notes.filter((n: allNotesType) => !ids.has(n.id)) || [];
         return [...prev, ...filtered];
       });
     } else {
-      setAllNotes(data.notes);
+      setAllNotes(data?.notes || []);
     }
-
-    if (data.notes.length < 15) {
+    // console.log(data);
+    if (data && data?.notes?.length < 15) {
       // stopPagination.current = true;
+      console.log("mimim");
       setStopPagination(true);
       observerInstance.current?.disconnect();
     }
@@ -57,9 +69,10 @@ function Notes() {
   const [isResetDone, setIsResetDone] = useState(false);
 
   useEffect(() => {
+    // abortControllerRef.current?.abort();
     setAllNotes([]);
     setPage(1);
-    setLoading(false);
+    // setLoading(false);
     // stopPagination.current = false;
     setStopPagination(false);
     observerInstance.current?.disconnect();
@@ -115,54 +128,54 @@ function Notes() {
       </div>
 
       {/* Scrollable Notes */}
-      {loading && allNotes.length === 0 ? (
+      {loading ? (
         <NotesLoader />
+      ) : allNotes.length === 0 ? (
+        <h2 className="flex justify-center items-center text-menutextcolor h-full">
+          This Folder is Empty
+        </h2>
       ) : (
         <div className="flex-1 overflow-y-auto no-scrollbar">
-          {allNotes.length !== 0 ? (
-            <div className="flex flex-col gap-3 pl-4 pr-4 pb-4">
-              {allNotes.map((item) => (
-                <NavLink
-                  to={
-                    "/folders/" +
-                    item.folderId +
-                    "/" +
-                    paramData.name +
-                    "/" +
-                    "content/" +
-                    item.id
-                  }
-                  key={`${item.id}`}
-                  className={({ isActive }) =>
-                    `w-full flex flex-col p-3 transition-colors duration-200 ${
-                      isActive
-                        ? "bg-activecolor text-white"
-                        : "bg-notesbg hover:bg-activecolor/40"
-                    }`
-                  }
-                >
-                  <h2 className="w-full font-SourceSans3 overflow-hidden font-semibold text-2xl text-headingcolor pl-3 pr-3 truncate">
-                    {item.title}
-                  </h2>
+          <div className="flex flex-col gap-3 pl-4 pr-4 pb-4">
+            {allNotes.map((item) => (
+              <NavLink
+                to={
+                  "/folders/" +
+                  item.folderId +
+                  "/" +
+                  paramData.name +
+                  "/" +
+                  "content/" +
+                  item.id
+                }
+                key={item.id}
+                className={({ isActive }) =>
+                  `w-full flex flex-col p-3 transition-colors duration-200 ${
+                    isActive
+                      ? "bg-activecolor text-white"
+                      : "bg-notesbg hover:bg-activecolor/40"
+                  }`
+                }
+              >
+                <h2 className="w-full font-SourceSans3 overflow-hidden font-semibold text-2xl text-headingcolor pl-3 pr-3 truncate">
+                  {item.title}
+                </h2>
 
-                  <div className="flex flex-row overflow-hidden font-SourceSans3 text-menutextcolor p-3 gap-4">
-                    <h3>{getdate(item.updatedAt)}</h3>
-                    <h3 className="truncate">{item.preview}</h3>
-                  </div>
-                </NavLink>
-              ))}
-              <div ref={observerRef} className="h-10"></div>
-              {loading && allNotes.length > 0 && (
-                <div className="flex justify-center p-4 text-menutextcolor">
-                  Loading more notes...
+                <div className="flex flex-row overflow-hidden font-SourceSans3 text-menutextcolor p-3 gap-4">
+                  <h3>{getdate(item.updatedAt)}</h3>
+                  <h3 className="truncate">{item.preview}</h3>
                 </div>
-              )}
-            </div>
-          ) : (
-            <h2 className="flex justify-center items-center text-menutextcolor h-full">
-              This Folder is Empty
-            </h2>
-          )}
+              </NavLink>
+            ))}
+
+            <div ref={observerRef} className="h-10"></div>
+
+            {loading && (
+              <div className="flex justify-center p-4 text-menutextcolor">
+                Loading more notes...
+              </div>
+            )}
+          </div>
         </div>
       )}
     </div>

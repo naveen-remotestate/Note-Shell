@@ -5,14 +5,34 @@ import type {
 } from "../components/Types/NotesType";
 import CallApi from "./CallApi";
 //geting all notes of a folder
+// export async function getFolderNotesById(
+//   folderId: string | null,
+//   page: number,
+//   limit: number = 15,
+// ) {
+//   try {
+//     const response = await CallApi.get<NotesType>(
+//       `/notes?archived=false&deleted=false&folderId=${folderId}&page=${page}&limit=${limit}`,
+//     );
+
+//     return response.data;
+//   } catch (error) {
+//     console.log(error);
+//   }
+// }
+//getting all notes with abort controller
 export async function getFolderNotesById(
   folderId: string | null,
   page: number,
   limit: number = 15,
+  options?: { signal?: AbortSignal },
 ) {
   try {
     const response = await CallApi.get<NotesType>(
       `/notes?archived=false&deleted=false&folderId=${folderId}&page=${page}&limit=${limit}`,
+      {
+        signal: options?.signal,
+      },
     );
 
     return response.data;
