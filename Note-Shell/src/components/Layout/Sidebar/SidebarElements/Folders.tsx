@@ -9,6 +9,7 @@ import TrashIcon from "../../../../assets / Icons/TrashIcon";
 import { deleteFolder } from "../../../../api/FolderApi";
 import { postFolder } from "../../../../api/FolderApi";
 import { confirmDeleteDialog } from "../../../../assets / Icons/ConfirmDeleteDialog";
+// import { useNavigate } from "react-router";
 
 function Folders() {
   type folderType = {
@@ -44,7 +45,10 @@ function Folders() {
   }
 
   useEffect(() => {
-    getdata();
+    const init = () => {
+      getdata();
+    };
+    init();
   }, []);
   //add new folder
   const AddFolder = () => {

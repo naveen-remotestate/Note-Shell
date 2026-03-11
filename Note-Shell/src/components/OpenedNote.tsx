@@ -64,17 +64,18 @@ function OpenedNote({ id, foldername }: propType) {
 
       setNote((prev) => (prev ? { ...prev, isArchived: value } : prev));
       setIsThreeDotOpen(false);
-      // if (window.location.pathname.includes("/archives")) {
-      //   navigate("/archives");
-      // }
+      if (window.location.pathname.includes("/favorites")) {
+        navigate("/favorites");
+      }
       // if (window.location.pathname.includes("/folders")) {
       //   navigate(`/folders/${paramdata.id}/${paramdata.name}`);
       // }
-
-      if (!value) {
-        navigate(-1);
-      } else {
+      else if (value) {
         navigate(`/folders/${paramdata.id}/${paramdata.name}`);
+        navigate(0);
+        //navigate();
+      } else {
+        navigate("/archives");
       }
     } catch (error) {
       console.error(error);
@@ -95,6 +96,7 @@ function OpenedNote({ id, foldername }: propType) {
       await patchNoteName(note.id, newTitle);
       setNote((prev) => (prev ? { ...prev, title: newTitle } : prev));
       navigate(`/folders/${paramdata.id}/${paramdata.name}/content/${note.id}`);
+      navigate(0);
     } catch (error) {
       console.error(error);
     }
@@ -117,7 +119,7 @@ function OpenedNote({ id, foldername }: propType) {
     }, 600);
 
     return () => clearTimeout(delay);
-  }, [noteContent]);
+  }, [note, noteContent]);
 
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
 
@@ -173,8 +175,13 @@ function OpenedNote({ id, foldername }: propType) {
       await patchNoteFolder(note.id, folderId);
 
       setIsFolderDropDown(false);
-
-      navigate(`/folders/${folderId}/${folderName}/content/${note.id}`);
+      if (window.location.pathname.includes("/favorites")) {
+        navigate(`/favorites/${folderId}/${folderName}/${note.id}`);
+      } else if (window.location.pathname.includes("/archives")) {
+        navigate(`/archives/${folderId}/${folderName}/${note.id}`);
+      } else {
+        navigate(`/folders/${folderId}/${folderName}/content/${note.id}`);
+      }
     } catch (error) {
       console.error(error);
     }
@@ -275,7 +282,7 @@ function OpenedNote({ id, foldername }: propType) {
                       setIsThreeDotOpen(false);
                       setNote(null);
                       navigate(
-                        `/trash/${paramdata.id}/${note?.title}/${paramdata.noteid}`,
+                        `/Trash/${paramdata.id}/${note?.title}/${paramdata.noteid}`,
                       );
                     } catch (error) {
                       console.error(error);

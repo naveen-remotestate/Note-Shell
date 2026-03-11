@@ -14,6 +14,7 @@ type ConfirmProps = {
   cleanup: () => void;
 };
 
+// eslint-disable-next-line react-refresh/only-export-components
 function ConfirmDialog({ message, resolve, cleanup }: ConfirmProps) {
   const close = (result: boolean) => {
     resolve(result);

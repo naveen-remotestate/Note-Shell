@@ -1,123 +1,123 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { NavLink, useParams } from "react-router";
-// import { getFolderNotesById } from "../api/get";
 import { getFolderNotesById } from "../../../api/NotesApi";
 import NotesLoader from "../../UI/Theme/NotesLoader";
+
+type allNotesType = {
+  id: string;
+  folderId: string;
+  title: string;
+  updatedAt: string;
+  preview: string;
+};
+
 function Notes() {
-  const paramData = useParams(); //getting ID and Name of folder through params
+  const paramData = useParams();
   const folderHeading = paramData?.name;
   const folderId = paramData.id ? paramData.id : null;
-
-  type allNotesType = {
-    id: string;
-    folderId: string;
-    title: string;
-    updatedAt: string;
-    preview: string;
-  };
 
   const [allNotes, setAllNotes] = useState<allNotesType[]>([]);
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(false);
-  const [Pagination, setStopPagination] = useState(false);
+  const [hasMore, setHasMore] = useState(true);
 
   const observerRef = useRef<HTMLDivElement | null>(null);
   const observerInstance = useRef<IntersectionObserver | null>(null);
   const abortControllerRef = useRef<AbortController | null>(null);
 
-  const getAllNotes = useCallback(
-    async (pageNumber: number) => {
-      if (!folderId || Pagination) return;
+  useEffect(() => {
+    if (!folderId) return;
+
+    abortControllerRef.current?.abort();
+    observerInstance.current?.disconnect();
+
+    const controller = new AbortController();
+    abortControllerRef.current = controller;
+
+    const fetchFirstPage = async () => {
+      setAllNotes([]);
+      setPage(1);
+      setHasMore(true);
       setLoading(true);
 
-      abortControllerRef.current?.abort();
-
-      const controller = new AbortController();
-      abortControllerRef.current = controller;
-
-      const data = await getFolderNotesById(folderId, pageNumber, 15, {
+      const data = await getFolderNotesById(folderId, 1, 15, {
         signal: controller.signal,
       });
 
-      console.log(data);
+      if (controller.signal.aborted) return;
 
-      if (data?.notes.length === 0 && folderId) {
-        setStopPagination(true);
-        setLoading(false);
-        observerInstance.current?.disconnect();
-        return;
-      }
+      const notes = data?.notes || [];
+      setAllNotes(notes);
 
-      if (page > 1) {
-        setAllNotes((prev) => {
-          const ids = new Set(prev.map((n: allNotesType) => n.id));
-          const filtered =
-            data?.notes.filter((n: allNotesType) => !ids.has(n.id)) || [];
-          return [...prev, ...filtered];
-        });
-      } else {
-        setAllNotes(data?.notes || []);
-      }
-
-      if (data && data?.notes?.length < 15) {
-        console.log("mimim");
-        setStopPagination(true);
-        observerInstance.current?.disconnect();
+      if (notes.length < 15) {
+        setHasMore(false);
       }
 
       setLoading(false);
-    },
-    [Pagination, folderId, page],
-  );
-  const [isResetDone, setIsResetDone] = useState(false);
-
-  useEffect(() => {
-    const init = () => {
-      setAllNotes([]);
-      setPage(1);
-      setStopPagination(false);
-      observerInstance.current?.disconnect();
-      setIsResetDone(true);
     };
-    // abortControllerRef.current?.abort();
 
-    // setLoading(false);
-    // stopPagination.current = false;
-    init();
+    fetchFirstPage();
+
+    return () => {
+      controller.abort();
+    };
   }, [folderId]);
 
   useEffect(() => {
-    const init = () => {
-      if (isResetDone) {
-        getAllNotes(page);
-        setIsResetDone(false);
+    if (!folderId || page <= 1 || !hasMore) return;
+
+    const controller = new AbortController();
+    abortControllerRef.current = controller;
+
+    const fetchNextPage = async () => {
+      setLoading(true);
+
+      const data = await getFolderNotesById(folderId, page, 15, {
+        signal: controller.signal,
+      });
+
+      if (controller.signal.aborted) return;
+
+      const notes = data?.notes || [];
+
+      if (notes.length === 0) {
+        setHasMore(false);
+        setLoading(false);
+        return;
       }
+
+      setAllNotes((prev) => {
+        const ids = new Set(prev.map((n) => n.id));
+        const filtered = notes.filter((n: allNotesType) => !ids.has(n.id));
+        return [...prev, ...filtered];
+      });
+
+      if (notes.length < 15) {
+        setHasMore(false);
+      }
+
+      setLoading(false);
     };
-    init();
-  }, [getAllNotes, isResetDone, page]);
+
+    fetchNextPage();
+
+    return () => {
+      controller.abort();
+    };
+  }, [folderId, hasMore, page]);
 
   useEffect(() => {
-    const init = () => {
-      if (!isResetDone) {
-        getAllNotes(page);
-      }
-    };
-    init();
-  }, [getAllNotes, isResetDone, page]);
+    observerInstance.current?.disconnect();
 
-  useEffect(() => {
+    if (!hasMore || loading) return;
+
     observerInstance.current = new IntersectionObserver(
       (entries) => {
-        const entry = entries[0];
-
-        if (entry.isIntersecting && !loading) {
+        if (entries[0].isIntersecting) {
           setPage((prev) => prev + 1);
         }
       },
-      {
-        root: null,
-        rootMargin: "200px",
-      },
+      { root: null, rootMargin: "200px" },
     );
 
     if (observerRef.current) {
@@ -125,14 +125,14 @@ function Notes() {
     }
 
     return () => observerInstance.current?.disconnect();
-  }, [loading]);
+  }, [hasMore, loading]);
 
   function getdate(date: string): string {
     const dateObj = new Date(date);
     return dateObj.toLocaleDateString();
   }
+
   return (
-    // title is fixed
     <div className="flex flex-col h-full w-full">
       <div>
         <h1 className="text-headingcolor overflow-x-auto no-scrollbar font-SourceSans3 text-2xl p-4 font-semibold mr-5">
@@ -140,10 +140,9 @@ function Notes() {
         </h1>
       </div>
 
-      {/* Scrollable Notes */}
-      {loading ? (
+      {loading && allNotes.length === 0 ? (
         <NotesLoader />
-      ) : allNotes.length === 0 ? (
+      ) : !loading && allNotes.length === 0 ? (
         <h2 className="flex justify-center items-center text-menutextcolor h-full">
           This Folder is Empty
         </h2>
@@ -181,14 +180,12 @@ function Notes() {
               </NavLink>
             ))}
 
-            <div ref={observerRef} className="h-10"></div>
+            {hasMore && <div ref={observerRef} className="h-10"></div>}
 
-            {loading ? (
+            {loading && allNotes.length > 0 && (
               <div className="flex justify-center p-4 text-menutextcolor">
                 Loading more notes...
               </div>
-            ) : (
-              <></>
             )}
           </div>
         </div>

@@ -10,9 +10,10 @@ import { NavLink, useLocation, useNavigate } from "react-router";
 import ToggleTheme from "../../UI/Theme/ToggleTheme";
 import CrossIcon from "../../../assets / Icons/CrossIcon";
 import { postNote } from "../../../api/NotesApi";
+import type { ResponsePicked } from "../../Types/NotesType";
 
 type SidebarPropsType = {
-  setSearchResults: React.Dispatch<React.SetStateAction<any[]>>;
+  setSearchResults: React.Dispatch<React.SetStateAction<ResponsePicked[]>>;
   setIsSearching: React.Dispatch<React.SetStateAction<boolean>>;
 };
 function Sidebar({ setSearchResults, setIsSearching }: SidebarPropsType) {
@@ -23,10 +24,13 @@ function Sidebar({ setSearchResults, setIsSearching }: SidebarPropsType) {
   const location = useLocation();
   //At Begining
   useEffect(() => {
-    setSearchInput(""); //empty
-    setSearchResults([]); //empty
-    setIsSearching(false); //false
-  }, [location.pathname]);
+    const init = () => {
+      setSearchInput(""); //empty
+      setSearchResults([]); //empty
+      setIsSearching(false); //false
+    };
+    init();
+  }, [location.pathname, setIsSearching, setSearchResults]);
 
   useEffect(() => {
     if (!searchInput.trim()) {
@@ -37,12 +41,12 @@ function Sidebar({ setSearchResults, setIsSearching }: SidebarPropsType) {
     //applied delay of 600ms for search
     const delay = setTimeout(async () => {
       const data = await getSearch(searchInput);
-      setSearchResults(data);
+      setSearchResults(data ? data : []);
       setIsSearching(true);
     }, 600);
 
     return () => clearTimeout(delay);
-  }, [searchInput]);
+  }, [searchInput, setIsSearching, setSearchResults]);
 
   // console.log(searchResults);
 

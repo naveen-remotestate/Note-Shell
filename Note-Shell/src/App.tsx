@@ -111,7 +111,7 @@ function App() {
             />
             {/* This is for Trash */}
             <Route
-              path="trash"
+              path="Trash"
               element={
                 <>
                   <div className="bg-secondary w-25/100 h-full">
@@ -125,11 +125,11 @@ function App() {
             />
 
             <Route
-              path="trash/:id/:name?/:noteid"
+              path="Trash/:id/:name?/:noteid"
               element={
                 <>
                   <div className="bg-secondary w-25/100 h-full">
-                    <Trash key="diff-trash" />
+                    <Trash key="diff-Trash" />
                   </div>
                   <div className="bg-primary w-55/100 h-full flex">
                     <Restoretrash />

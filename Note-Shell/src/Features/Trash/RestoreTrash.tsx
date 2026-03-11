@@ -15,11 +15,14 @@ export default function Restoretrash() {
     console.log("restore note function");
     await postRestoreNoteById(id);
     setIsRestored(true);
-    navigate("/trash");
+    navigate("/Trash");
   }
 
   useEffect(() => {
-    setIsRestored(false);
+    const init = () => {
+      setIsRestored(false);
+    };
+    init();
   }, [noteid]);
   return (
     <>

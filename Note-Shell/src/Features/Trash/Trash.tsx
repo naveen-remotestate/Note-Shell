@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { NavLink } from "react-router";
 import { getTrash } from "../../api/NotesApi";
 import NotesLoader from "../../components/UI/Theme/NotesLoader";
@@ -17,50 +17,68 @@ function Trash() {
   const [allTrashNotes, setAllTrashNotes] = useState<allTrashNotesType[]>([]);
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(false);
-  const [stopPagination, setStopPagination] = useState(false);
+  const [hasMore, setHasMore] = useState(false);
 
   const observerRef = useRef<HTMLDivElement | null>(null);
   const observerInstance = useRef<IntersectionObserver | null>(null);
 
-  async function getAllTrash(pageNumber: number) {
-    if (loading || stopPagination) return;
+  const fetchFirstTrashPage = useCallback(async () => {
+    setLoading(true);
+    setPage(1);
 
+    const data = await getTrash(1, 15);
+    const trashNotes = data || [];
+
+    setAllTrashNotes(trashNotes);
+    setHasMore(trashNotes.length === 15);
+
+    setLoading(false);
+  }, []);
+
+  const fetchNextTrashNotes = useCallback(async (pageNumber: number) => {
     setLoading(true);
 
     const data = await getTrash(pageNumber, 15);
 
-    if (!data || data.length === 0) {
-      setStopPagination(true);
+    const trashNotes = data || [];
+
+    console.log("trashNotes", trashNotes);
+
+    if (trashNotes.length === 0) {
+      setHasMore(false);
       setLoading(false);
       return;
     }
 
     setAllTrashNotes((prev) => {
       const ids = new Set(prev.map((n) => n.id));
-      const filtered = data.filter((n: allTrashNotesType) => !ids.has(n.id));
+      const filtered = trashNotes.filter(
+        (n: allTrashNotesType) => !ids.has(n.id),
+      );
       return [...prev, ...filtered];
     });
-    if (data.length < 15) {
-      setStopPagination(true);
-      observerInstance.current?.disconnect();
+
+    if (trashNotes.length < 15) {
+      setHasMore(false);
     }
 
     setLoading(false);
-  }
-
-  // useEffect(() => {
-  //   setAllTrashNotes([]);
-  //   setPage(1);
-  //   setLoading(false);
-  //   setStopPagination(false);
-  //   observerInstance.current?.disconnect();
-  // }, [paramdata.id]);
+  }, []);
 
   useEffect(() => {
-    getAllTrash(page);
-  }, [page]);
+    const init = () => {
+      if (page === 1) {
+        fetchFirstTrashPage();
+      } else if (hasMore) {
+        fetchNextTrashNotes(page);
+      }
+    };
+    init();
+  }, [fetchFirstTrashPage, fetchNextTrashNotes, hasMore, page]);
 
   useEffect(() => {
+    observerInstance.current?.disconnect();
+
     const observer = new IntersectionObserver(
       (entries) => {
         const entry = entries[0];
