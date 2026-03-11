@@ -14,7 +14,7 @@ type UniversalType = {
   folder: foldertype;
 };
 
-type ResponePicked = Pick<
+export type ResponsePicked = Pick<
   UniversalType,
   | "id"
   | "folderId"
@@ -27,11 +27,11 @@ type ResponePicked = Pick<
   | "preview"
   | "folder"
 >;
-export type recentResponeType = {
-  recentNotes: ResponePicked[];
+export type recentResponseType = {
+  recentNotes: ResponsePicked[];
 };
 export type NotesType = {
-  notes: ResponePicked[];
+  notes: ResponsePicked[];
   total: number;
 };
 

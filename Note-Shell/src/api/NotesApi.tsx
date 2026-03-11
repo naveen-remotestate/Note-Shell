@@ -1,7 +1,7 @@
 import type {
   noteContentType,
   NotesType,
-  recentResponeType,
+  recentResponseType,
 } from "../components/Types/NotesType";
 import CallApi from "./CallApi";
 //geting all notes of a folder
@@ -20,6 +20,7 @@ import CallApi from "./CallApi";
 //     console.log(error);
 //   }
 // }
+
 //getting all notes with abort controller
 export async function getFolderNotesById(
   folderId: string | null,
@@ -44,7 +45,7 @@ export async function getFolderNotesById(
 //getting all three recent notes
 export async function getRecent() {
   try {
-    const response = await CallApi.get<recentResponeType>("/notes/recent");
+    const response = await CallApi.get<recentResponseType>("/notes/recent");
     return response.data?.recentNotes;
   } catch (error) {
     console.error(error);

@@ -2,22 +2,23 @@ import { useEffect, useState } from "react";
 import RecentIcon from "../../../../assets / Icons/RecentIcon";
 import { NavLink } from "react-router";
 import { getRecent } from "../../../../api/NotesApi";
+import type { ResponsePicked } from "../../../Types/NotesType";
 function Recents() {
-  type recentType = {
-    id: string;
-    folderId: string;
-    title: string;
-    folder: {
-      name: string;
-    };
-  };
+  // type recentType = {
+  //   id: string;
+  //   folderId: string;
+  //   title: string;
+  //   folder: {
+  //     name: string;
+  //   };
+  // };
 
-  const [recents, setRecents] = useState<recentType[]>([]);
+  const [recents, setRecents] = useState<ResponsePicked[]>([]);
 
   useEffect(() => {
     async function getdata() {
       const data = await getRecent();
-      setRecents(data);
+      setRecents(data ? data : []);
     }
     getdata();
   }, []);

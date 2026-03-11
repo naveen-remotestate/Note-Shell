@@ -68,7 +68,7 @@ function Favorites() {
   }, [page, paramdata.id]);
 
   useEffect(() => {
-    observerInstance.current = new IntersectionObserver(
+    const observer = new IntersectionObserver(
       (entries) => {
         const entry = entries[0];
 
@@ -83,10 +83,10 @@ function Favorites() {
     );
 
     if (observerRef.current) {
-      observerInstance.current.observe(observerRef.current);
+      observer.observe(observerRef.current);
     }
 
-    return () => observerInstance.current?.disconnect();
+    return () => observer.disconnect();
   }, [loading]);
 
   function getdate(date: string): string {

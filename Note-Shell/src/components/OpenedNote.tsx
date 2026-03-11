@@ -38,6 +38,8 @@ function OpenedNote({ id, foldername }: propType) {
   const [isThreeDotOpen, setIsThreeDotOpen] = useState(false);
   const [isfolderDropdown, setIsFolderDropDown] = useState(false);
 
+  // const [isActive, setActive] = useState(false);
+
   const navigate = useNavigate();
   const paramdata = useParams();
 
@@ -55,13 +57,19 @@ function OpenedNote({ id, foldername }: propType) {
       console.error(error);
     }
   }
-
+  /// markk  archive
   async function markArchive(id: string, value: boolean) {
     try {
       await patchMarkArchive(id, value);
 
       setNote((prev) => (prev ? { ...prev, isArchived: value } : prev));
       setIsThreeDotOpen(false);
+      // if (window.location.pathname.includes("/archives")) {
+      //   navigate("/archives");
+      // }
+      // if (window.location.pathname.includes("/folders")) {
+      //   navigate(`/folders/${paramdata.id}/${paramdata.name}`);
+      // }
 
       if (!value) {
         navigate(-1);
@@ -106,7 +114,7 @@ function OpenedNote({ id, foldername }: propType) {
       } catch (error) {
         console.error(error);
       }
-    }, 800);
+    }, 600);
 
     return () => clearTimeout(delay);
   }, [noteContent]);
@@ -121,7 +129,7 @@ function OpenedNote({ id, foldername }: propType) {
           setNote(data);
           setNoteContent(data.content);
 
-          if (data.title === "Untitled Note" || data.title === "") {
+          if (data.title === "") {
             setIsEditingTitle(true);
             setNewTitle(data.title);
           }
@@ -130,7 +138,7 @@ function OpenedNote({ id, foldername }: propType) {
 
       getdata();
     }
-  }, [id]);
+  }, [id]); ////////////////////////////////////////////////
 
   const date = new Date(note?.updatedAt ? note.updatedAt : "");
 
@@ -238,11 +246,11 @@ function OpenedNote({ id, foldername }: propType) {
                 </li>
 
                 <li
-                  onClick={() =>
-                    note?.isArchived
-                      ? markArchive(id, false)
-                      : markArchive(id, true)
-                  }
+                  onClick={() => {
+                    if (note?.isArchived) markArchive(id, false);
+                    else markArchive(id, true);
+                    // navigate()
+                  }}
                 >
                   <div className="p-4 flex flex-row gap-3 hover:bg-activecolor cursor-pointer">
                     <ArchivedIcon />

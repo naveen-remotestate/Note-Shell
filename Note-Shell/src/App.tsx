@@ -9,8 +9,9 @@ import Restoretrash from "./Features/Trash/RestoreTrash";
 import { useState } from "react";
 import SearchResults from "./Features/Search/SearchResults";
 import WelcomeNote from "./components/Layout/Welcome/WelcomeNote";
+import type { ResponsePicked } from "./components/Types/NotesType";
 function App() {
-  const [searchResults, setSearchResults] = useState<any[]>([]);
+  const [searchResults, setSearchResults] = useState<ResponsePicked[]>([]);
   const [isSearching, setIsSearching] = useState<boolean>(false);
   return (
     <>
