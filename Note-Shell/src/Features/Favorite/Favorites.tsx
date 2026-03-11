@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { NavLink, useParams } from "react-router";
 import { getFavorites } from "../../api/NotesApi";
 import NotesLoader from "../../components/UI/Theme/NotesLoader";
@@ -26,46 +26,55 @@ function Favorites() {
   const observerRef = useRef<HTMLDivElement | null>(null);
   const observerInstance = useRef<IntersectionObserver | null>(null);
 
-  async function getAllFavorites(pageNumber: number) {
-    if (loading || stopPagination) return;
+  const getAllFavorites = useCallback(
+    async (pageNumber: number) => {
+      if (loading || stopPagination) return;
 
-    setLoading(true);
+      setLoading(true);
 
-    const data = await getFavorites(pageNumber, 15);
+      const data = await getFavorites(pageNumber, 15);
 
-    if (!data || data.length === 0) {
-      setStopPagination(true);
+      if (!data || data.length === 0) {
+        setStopPagination(true);
+        setLoading(false);
+        observerInstance.current?.disconnect();
+        return;
+      }
+
+      setAllFavoritesNotes((prev) => {
+        const ids = new Set(prev.map((n) => n.id));
+        const filtered = data.filter(
+          (n: allFavoritesNotesType) => !ids.has(n.id),
+        );
+        return [...prev, ...filtered];
+      });
+
+      if (data.length < 15) {
+        setStopPagination(true);
+        observerInstance.current?.disconnect();
+      }
       setLoading(false);
-      observerInstance.current?.disconnect();
-      return;
-    }
-
-    setAllFavoritesNotes((prev) => {
-      const ids = new Set(prev.map((n) => n.id));
-      const filtered = data.filter(
-        (n: allFavoritesNotesType) => !ids.has(n.id),
-      );
-      return [...prev, ...filtered];
-    });
-
-    if (data.length < 15) {
-      setStopPagination(true);
-      observerInstance.current?.disconnect();
-    }
-    setLoading(false);
-  }
+    },
+    [loading, stopPagination],
+  );
 
   useEffect(() => {
-    setAllFavoritesNotes([]);
-    setPage(1);
-    setLoading(false);
-    setStopPagination(false);
-    observerInstance.current?.disconnect();
+    const init = () => {
+      setAllFavoritesNotes([]);
+      setPage(1);
+      setLoading(false);
+      setStopPagination(false);
+      observerInstance.current?.disconnect();
+    };
+    init();
   }, [paramdata.id]);
 
   useEffect(() => {
-    getAllFavorites(page);
-  }, [page, paramdata.id]);
+    const init = () => {
+      getAllFavorites(page);
+    };
+    init();
+  }, [getAllFavorites, page, paramdata.id]);
 
   useEffect(() => {
     const observer = new IntersectionObserver(

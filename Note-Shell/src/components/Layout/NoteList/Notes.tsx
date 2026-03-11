@@ -28,13 +28,12 @@ function Notes() {
   const getAllNotes = useCallback(
     async (pageNumber: number) => {
       if (!folderId || Pagination) return;
+      setLoading(true);
 
       abortControllerRef.current?.abort();
 
       const controller = new AbortController();
       abortControllerRef.current = controller;
-
-      setLoading(true);
 
       const data = await getFolderNotesById(folderId, pageNumber, 15, {
         signal: controller.signal,
@@ -42,9 +41,8 @@ function Notes() {
 
       console.log(data);
 
-      if (data?.notes.length === 0) {
+      if (data?.notes.length === 0 && folderId) {
         setStopPagination(true);
-        console.log("JIJIJI");
         setLoading(false);
         observerInstance.current?.disconnect();
         return;
@@ -69,7 +67,7 @@ function Notes() {
 
       setLoading(false);
     },
-    [folderId, Pagination, page],
+    [Pagination, folderId, page],
   );
   const [isResetDone, setIsResetDone] = useState(false);
 
@@ -99,9 +97,12 @@ function Notes() {
   }, [getAllNotes, isResetDone, page]);
 
   useEffect(() => {
-    if (!isResetDone) {
-      getAllNotes(page);
-    }
+    const init = () => {
+      if (!isResetDone) {
+        getAllNotes(page);
+      }
+    };
+    init();
   }, [getAllNotes, isResetDone, page]);
 
   useEffect(() => {

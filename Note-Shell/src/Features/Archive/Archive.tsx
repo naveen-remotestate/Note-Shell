@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { NavLink, useParams } from "react-router";
 import { getArchives } from "../../api/NotesApi";
 import NotesLoader from "../../components/UI/Theme/NotesLoader";
@@ -25,43 +25,54 @@ function Archives() {
   const observerRef = useRef<HTMLDivElement | null>(null);
   const observerInstance = useRef<IntersectionObserver | null>(null);
 
-  async function getAllArchives(pageNumber: number) {
-    if (loading || stopPagination) return;
+  const getAllArchives = useCallback(
+    async (pageNumber: number) => {
+      if (loading || stopPagination) return;
 
-    setLoading(true);
+      setLoading(true);
 
-    const data = await getArchives(pageNumber, 15);
+      const data = await getArchives(pageNumber, 15);
 
-    if (!data || data.length === 0) {
-      setStopPagination(true);
+      if (!data || data.length === 0) {
+        setStopPagination(true);
+        setLoading(false);
+        observerInstance.current?.disconnect();
+        return;
+      }
+
+      setAllArchivesNotes((prev) => {
+        const ids = new Set(prev.map((n) => n.id));
+        const filtered = data.filter(
+          (n: allArchivesNotesType) => !ids.has(n.id),
+        );
+        return [...prev, ...filtered];
+      });
+      if (data.length < 15) {
+        setStopPagination(true);
+        observerInstance.current?.disconnect();
+      }
       setLoading(false);
-      observerInstance.current?.disconnect();
-      return;
-    }
-
-    setAllArchivesNotes((prev) => {
-      const ids = new Set(prev.map((n) => n.id));
-      const filtered = data.filter((n: allArchivesNotesType) => !ids.has(n.id));
-      return [...prev, ...filtered];
-    });
-    if (data.length < 15) {
-      setStopPagination(true);
-      observerInstance.current?.disconnect();
-    }
-    setLoading(false);
-  }
+    },
+    [loading, stopPagination],
+  );
 
   useEffect(() => {
-    setAllArchivesNotes([]);
-    setPage(1);
-    setLoading(false);
-    setStopPagination(false);
-    observerInstance.current?.disconnect();
+    const init = () => {
+      setAllArchivesNotes([]);
+      setPage(1);
+      setLoading(false);
+      setStopPagination(false);
+      observerInstance.current?.disconnect();
+    };
+    init();
   }, [paramdata.id]);
 
   useEffect(() => {
-    getAllArchives(page);
-  }, [page, paramdata.id]);
+    const init = () => {
+      getAllArchives(page);
+    };
+    init();
+  }, [getAllArchives, page, paramdata.id]);
 
   useEffect(() => {
     const observer = new IntersectionObserver(
