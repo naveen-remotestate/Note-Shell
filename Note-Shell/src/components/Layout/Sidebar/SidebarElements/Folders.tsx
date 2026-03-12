@@ -2,7 +2,7 @@ import AddFolderIcon from "../../../../assets / Icons/AddFolderIcon";
 import CloseFolderIcon from "../../../../assets / Icons/CloseFolderIcon";
 import OpenFolderIcon from "../../../../assets / Icons/OpenFolderIcon";
 import { useEffect, useState } from "react";
-import { NavLink } from "react-router";
+import { NavLink, useNavigate } from "react-router";
 import { getFolders } from "../../../../api/FolderApi";
 import { patchFolderName } from "../../../../api/FolderApi";
 import TrashIcon from "../../../../assets / Icons/TrashIcon";
@@ -25,6 +25,7 @@ function Folders() {
     const data = await getFolders();
     if (data) setFolders(data);
   }
+  const navigate = useNavigate();
   // function for updating foldername
   async function updateFolderName(id: string) {
     if (newFoldername.trim() === "") {
@@ -32,12 +33,19 @@ function Folders() {
       return;
     }
     try {
-      await patchFolderName(id, newFoldername);
+      const response = await patchFolderName(
+        id,
+        newFoldername.toString().trim(),
+      );
+      // console.log("response isssss" + response);
       setFolders((prev) =>
         prev.map((folder) =>
           folder.id === id ? { ...folder, name: newFoldername } : folder,
         ),
       );
+      if (response) {
+        navigate(`/folders/${id}/${newFoldername}`);
+      }
     } catch (error) {
       console.log(error);
     }

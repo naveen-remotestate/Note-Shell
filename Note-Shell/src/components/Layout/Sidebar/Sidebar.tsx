@@ -22,7 +22,6 @@ function Sidebar({ setSearchResults, setIsSearching }: SidebarPropsType) {
   // const [searchResults, setSearchResults] = useState([]);
 
   const location = useLocation();
-  //At Begining
   useEffect(() => {
     const init = () => {
       setSearchInput(""); //empty

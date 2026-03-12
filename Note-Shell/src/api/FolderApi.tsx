@@ -21,9 +21,10 @@ export async function postFolder(folderName: string) {
 
 // edit folder name
 export async function patchFolderName(id: string, foldername: string) {
-  await CallApi.patch(`/folders/${id}`, {
+  const response = await CallApi.patch(`/folders/${id}`, {
     name: foldername,
   });
+  return response;
 }
 
 //delete folder

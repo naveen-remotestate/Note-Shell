@@ -122,7 +122,7 @@ function Trash() {
                 {allTrashNotes.map((item) => (
                   <NavLink
                     to={
-                      "/trash/" +
+                      "/Trash/" +
                       item.folderId +
                       "/" +
                       item.title +

@@ -140,7 +140,7 @@ function OpenedNote({ id, foldername }: propType) {
 
       getdata();
     }
-  }, [id]); ////////////////////////////////////////////////
+  }, [id]);
 
   const date = new Date(note?.updatedAt ? note.updatedAt : "");
 
@@ -301,7 +301,7 @@ function OpenedNote({ id, foldername }: propType) {
         {/* header- date and folder */}
         <div className="flex flex-col gap-3.5 font-SourceSans3 text-sm text-menutextcolor p-2">
           <div className="flex flex-row gap-5 pt-3">
-            <DateIcon className="text-menutextcolor hover:text-blue-500 transition" />
+            <DateIcon className="text-menutextcolor hover:text-activecolor transition" />
             <h4>Date</h4>
             <h4 className="text-headingcolor font-semibold">
               {date.toLocaleDateString()}
@@ -311,12 +311,12 @@ function OpenedNote({ id, foldername }: propType) {
           <div className="border-b bg-secondary"></div>
 
           <div className="flex flex-row gap-5">
-            <FolderIcon className="text-headingcolor hover:text-blue-500 transition" />
+            <FolderIcon className="text-headingcolor hover:text-activecolor transition" />
             <h4>Folder</h4>
 
             <div className="text-headingcolor truncate w-3xs font-semibold">
               <button
-                className="flex flex-row"
+                className="flex flex-row cursor-pointer"
                 onClick={() => setIsFolderDropDown(true)}
               >
                 {foldername}
@@ -335,10 +335,12 @@ function OpenedNote({ id, foldername }: propType) {
                   {folders.map((items) => (
                     <div
                       key={items.id}
-                      className="hover:bg-blue-400 p-1"
+                      className="hover:bg-activecolor p-1"
                       onClick={() => updateFolder(items.id, items.name)}
                     >
-                      <li className="pl-2">{items.name}</li>
+                      <li className="pl-2 truncate cursor-pointer">
+                        {items.name}
+                      </li>
                     </div>
                   ))}
                 </ul>
@@ -365,7 +367,7 @@ function OpenedNote({ id, foldername }: propType) {
               border border-menutextcolor/30
               rounded-lg
               p-3
-              focus:border-blue-500
+              focus:border-activecolor
             "
           />
         </div>
