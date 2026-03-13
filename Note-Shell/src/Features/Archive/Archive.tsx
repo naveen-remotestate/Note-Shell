@@ -14,7 +14,7 @@ function Archives() {
     };
   };
   const paramdata = useParams();
-  console.log(paramdata);
+  // console.log(paramdata);
   const [allArchivesNotes, setAllArchivesNotes] = useState<
     allArchivesNotesType[]
   >([]);

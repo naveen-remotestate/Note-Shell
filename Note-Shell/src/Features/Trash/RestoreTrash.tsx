@@ -12,7 +12,7 @@ export default function Restoretrash() {
   const navigate = useNavigate();
 
   async function restoreNote(id: string) {
-    console.log("restore note function");
+    // console.log("restore note function");
     await postRestoreNoteById(id);
     setIsRestored(true);
     navigate("/Trash");

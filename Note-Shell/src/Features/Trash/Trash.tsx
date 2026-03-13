@@ -42,7 +42,7 @@ function Trash() {
 
     const trashNotes = data || [];
 
-    console.log("trashNotes", trashNotes);
+    // console.log("trashNotes", trashNotes);
 
     if (trashNotes.length === 0) {
       setHasMore(false);

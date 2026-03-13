@@ -107,7 +107,23 @@ function OpenedNote({ id, foldername }: propType) {
   // note content
   const [noteContent, setNoteContent] = useState("");
 
-  useEffect(() => {
+  // const [demoNote,setDemoNote]=useState()
+  // setDemoNote(note)
+  // useEffect(() => {
+  //   if (!note) return;
+
+  //   const delay = setTimeout(async () => {
+  //     try {
+  //       await patchNoteContent(paramdata.noteid, noteContent);
+  //     } catch (error) {
+  //       console.error(error);
+  //     }
+  //   }, 600);
+
+  //   return () => clearTimeout(delay);
+  // }, [noteContent]);
+
+  function callPatchContent(noteContent: string) {
     if (!note) return;
 
     const delay = setTimeout(async () => {
@@ -119,7 +135,7 @@ function OpenedNote({ id, foldername }: propType) {
     }, 600);
 
     return () => clearTimeout(delay);
-  }, [note, noteContent]);
+  }
 
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
 
@@ -354,7 +370,10 @@ function OpenedNote({ id, foldername }: propType) {
           <textarea
             ref={textareaRef}
             value={noteContent}
-            onChange={(e) => setNoteContent(e.target.value)}
+            onChange={(e) => {
+              setNoteContent(e.target.value);
+              callPatchContent(noteContent);
+            }}
             placeholder="Enter Note"
             className="
               w-full

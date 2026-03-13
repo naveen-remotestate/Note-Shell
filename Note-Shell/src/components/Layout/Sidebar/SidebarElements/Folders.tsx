@@ -76,10 +76,8 @@ function Folders() {
     } catch (error) {
       console.log(error);
     }
-
     setCreatingFolder(false);
   }
-
   return (
     <>
       <div className="flex flex-col h-full text-left ">
